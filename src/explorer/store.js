@@ -32,6 +32,7 @@ let store = {
     txCount: 0,
     stakingTxCount: 0,
     nodeCount: 0,
+    coinPrice: '0',
     lastUpdateTime: 0,
   },
 
@@ -123,6 +124,9 @@ let store = {
         .filter(x => isFinite(x))
     );
   },
+  updateCoinPrice(price) {
+    this.data.coinPrice = price;
+  },
   reset() {
     this.data.blocks = [];
     this.data.txs = [];
@@ -132,6 +136,7 @@ let store = {
     this.data.stakingTxCount = 0;
     this.data.nodeCount = 0;
     this.data.nodes = {};
+    this.data.coinPrice = '0';
     this.data.shardCount = 0;
   },
 };

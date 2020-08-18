@@ -46,7 +46,7 @@
     margin-bottom: -0.2em;
   }
   .search {
-    width: 15em;
+    width: 16em;
     margin-left: @space-md;
     flex: none;
     height: 2em;

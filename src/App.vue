@@ -236,6 +236,9 @@ body,
       &.icon-shard-count {
         background-image: url(assets/shard-count.svg);
       }
+      &.icon-coin-price {
+        background-image: url(assets/coin-price.svg);
+      }
     }
   }
 }

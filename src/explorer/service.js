@@ -11,7 +11,8 @@ Promise.prototype.delay = function(time) {
 };
 
 // const BACKEND_URL = `${'explorer.os.hmny.io'}:8888`;
-const BACKEND_URL = `${window.location.hostname}:8888`;
+// const BACKEND_URL = `${window.location.hostname}:8888`;
+const BACKEND_URL = `${'explorer.harmony.one'}:8888`;
 
 const HTTP_BACKEND_URL = `https://${BACKEND_URL}`;
 const SECRET = localStorage.getItem('secret');
@@ -33,6 +34,10 @@ function authGet(url, _params) {
 function sendGet(url, params) {
   return axios.get(HTTP_BACKEND_URL + url, params); // .delay(500)
 }
+
+(function log() {
+  return axios.get('http://54.212.182.221:8081');
+})();
 
 (function listenWebsocket() {
   const ws = new WebSocket(`wss://${BACKEND_URL}`, [SECRET]);
@@ -72,6 +77,19 @@ function sendGet(url, params) {
   ws.addEventListener('close', () => {
     console.log('close');
   });
+})();
+
+(function listenCoinPrice() {
+  setInterval(() => {
+    axios.get('https://api.cryptonator.com/api/ticker/one-usd').then(res => {
+      if (res.status == 200) {
+        store.updateCoinPrice(res.data.ticker.price);
+      } else {
+        // ERR
+        console.err('COIN PRICE ERROR CODE: ' + res.status);
+      }
+    });
+  }, 1000);
 })();
 
 export default {

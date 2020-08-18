@@ -64,7 +64,6 @@
         <div v-if="!!coinStats" class="explorer-card status-card">
           <CoinStats :stats="coinStats" />
         </div>
-
         <div class="explorer-card status-card">
           <div class="row">
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
@@ -116,14 +115,14 @@
               <div class="flex-horizontal">
                 <div class="icon-column">
                   <div class="data-icon-circle">
-                    <div class="data-icon icon-shard-count" />
+                    <div class="data-icon icon-coin-price" />
                   </div>
                 </div>
                 <div class="data-num-column">
                   <div class="data-num">
-                    {{ globalData.shardCount | number }}
+                    {{ globalData.coinPrice | number }}
                   </div>
-                  <h1>Shard Count</h1>
+                  <h1>Coin Price</h1>
                 </div>
               </div>
             </div>
