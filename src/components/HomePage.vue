@@ -129,12 +129,19 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
                   Latest Blocks
                 </h1>
+                <select v-model="selectedBlocksShard" class="flex-grow">
+                  <option>All Shards</option>
+                  <option>Shard 0</option>
+                  <option>Shard 1</option>
+                  <option>Shard 2</option>
+                  <option>Shard 3</option>
+                </select>
                 <div class="secondary-info">
                   <div class="timer">
                     Updated
@@ -160,17 +167,11 @@
                       Height
                     </div>
                     <div class="th text-right">
-                      Timestamp
-                    </div>
-                    <div class="th text-right">
                       Age
-                    </div>
-                    <div v-if="showTx" class="th text-right">
-                      Transactions
                     </div>
                   </div>
                   <div
-                    v-for="block in globalData.blocks"
+                    v-for="block in filterBlocksByShards"
                     :key="block.id"
                     class="tr"
                   >
@@ -190,40 +191,35 @@
                       </router-link>
                     </div>
                     <div class="td text-right">
-                      {{ block.timestamp | timestamp }}
-                    </div>
-                    <div class="td text-right">
                       {{ block.timestamp | age }}
-                    </div>
-                    <div v-if="showTx" class="td text-right">
-                      {{ block.txCount }}
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- <footer class="button-only-footer">
+              <footer class="button-only-footer">
                 <router-link
                   tag="button"
                   class="btn btn-light btn-block btn-mini"
                   to="blocks"
-                >View all blocks</router-link>
-              </footer>-->
+                >
+                  Show all blocks
+                </router-link>
+              </footer>
             </div>
           </div>
-
-          <div
-            v-if="!showStaking"
-            class="col-xs-12 col-sm-12 col-md-12 col-lg-12"
-          >
+          <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
-                <TransactionTableTabs
-                  :value="showStaking"
-                  :on-change="changeTab"
-                  :title-postfix-tx="globalData.txCount"
-                  :title-postfix-staking-tx="globalData.stakingTxCount"
-                />
-
+                <h1 class="flex-grow">
+                  Latest Transactions
+                </h1>
+                <select v-model="selectedTransactionsShard" class="flex-grow">
+                  <option>All Shards</option>
+                  <option>Shard 0</option>
+                  <option>Shard 1</option>
+                  <option>Shard 2</option>
+                  <option>Shard 3</option>
+                </select>
                 <div class="secondary-info">
                   <div class="timer">
                     Updated
@@ -246,22 +242,17 @@
                       Hash
                     </div>
                     <div class="th">
-                      From
-                    </div>
-                    <div class="th">
-                      To
-                    </div>
-                    <div class="th">
-                      Age
-                    </div>
-                    <div class="th">
                       Value
                     </div>
                     <div class="th text-right">
-                      Txn Fee
+                      Age
                     </div>
                   </div>
-                  <div v-for="tx in globalData.txs" :key="tx.id" class="tr">
+                  <div
+                    v-for="tx in filterTransactionsByShards"
+                    :key="tx.id"
+                    class="tr"
+                  >
                     <div class="td">
                       <router-link :to="'/shard/' + tx.shardID">
                         {{ tx.shardID }}
@@ -273,166 +264,23 @@
                       </router-link>
                     </div>
                     <div class="td">
-                      <router-link :to="'/address/' + tx.from.bech32">
-                        {{ tx.from.bech32 | shorten }}
-                      </router-link>
-                    </div>
-                    <div class="td">
-                      <router-link :to="'/address/' + tx.to.bech32">
-                        {{ tx.to.bech32 | shorten }}
-                      </router-link>
-                    </div>
-                    <div class="td">
-                      {{ tx.timestamp | age }}
-                    </div>
-                    <div class="td no-break">
                       {{ tx.value | amount }}
                     </div>
-                    <div class="td text-right no-break">
-                      {{ tx | fee }}
+                    <div class="td text-right">
+                      {{ tx.timestamp | age }}
                     </div>
                   </div>
                 </div>
-                <div class="show-more-container">
-                  <router-link to="/txs" class="show-more-button">
-                    Show all
-                    <b>{{ globalData.txCount | number }}</b> transactions
-                  </router-link>
-                </div>
               </div>
-              <!-- <footer class="button-only-footer">
+              <footer class="button-only-footer">
                 <router-link
                   tag="button"
                   class="btn btn-light btn-block btn-mini"
                   to="txs"
-                >View all transactions</router-link>
-              </footer>-->
-            </div>
-          </div>
-
-          <div
-            v-if="showStaking"
-            class="col-xs-12 col-sm-12 col-md-12 col-lg-12"
-          >
-            <div class="explorer-card latest-block-card">
-              <header>
-                <TransactionTableTabs
-                  :value="showStaking"
-                  :on-change="changeTab"
-                  :title-postfix-tx="globalData.txCount"
-                  :title-postfix-staking-tx="globalData.stakingTxCount"
-                />
-
-                <div class="secondary-info">
-                  <div class="timer">
-                    Updated
-                    {{
-                      Math.round(
-                        Math.max((now - globalData.lastUpdateTime) / 1000, 0)
-                      ) | number
-                    }}s ago...
-                  </div>
-                  <span class="total-block-num" />
-                </div>
-              </header>
-              <div class="explorer-card-body">
-                <div class="explorer-table-responsive latest-tx-table">
-                  <div class="tr">
-                    <div class="th">
-                      Shard
-                    </div>
-                    <div class="th">
-                      Hash
-                    </div>
-                    <div class="th">
-                      Type
-                    </div>
-                    <div class="th">
-                      Validator
-                    </div>
-                    <div class="th">
-                      Delegator
-                    </div>
-                    <div class="th">
-                      Age
-                    </div>
-                    <div class="th">
-                      Value
-                    </div>
-                    <div class="th text-right">
-                      Txn Fee
-                    </div>
-                  </div>
-                  <div
-                    v-for="tx in globalData.stakingTxs"
-                    :key="tx.id"
-                    class="tr"
-                  >
-                    <div class="td">
-                      <router-link :to="'/shard/' + tx.shardID">
-                        {{ tx.shardID }}
-                      </router-link>
-                    </div>
-                    <div class="td">
-                      <router-link :to="'/staking-tx/' + tx.id">
-                        {{ tx.id | shorten }}
-                      </router-link>
-                    </div>
-                    <div class="td">
-                      {{ tx.type }}
-                    </div>
-                    <div class="td">
-                      <router-link
-                        v-if="tx.validator.bech32"
-                        :to="
-                          '/address/' + tx.validator.bech32 + '?txType=staking'
-                        "
-                      >
-                        {{ tx.validator.bech32 | shorten }}
-                      </router-link>
-                      <div v-else>
-                        -
-                      </div>
-                    </div>
-                    <div class="td">
-                      <router-link
-                        v-if="tx.delegator.bech32"
-                        :to="
-                          '/address/' + tx.delegator.bech32 + '?txType=staking'
-                        "
-                      >
-                        {{ tx.delegator.bech32 | shorten }}
-                      </router-link>
-                      <div v-else>
-                        -
-                      </div>
-                    </div>
-                    <div class="td">
-                      {{ tx.timestamp | age }}
-                    </div>
-                    <div class="td no-break">
-                      {{ tx.value | amount }}
-                    </div>
-                    <div class="td text-right no-break">
-                      {{ tx | fee }}
-                    </div>
-                  </div>
-                </div>
-                <div class="show-more-container">
-                  <router-link to="/staking-txs" class="show-more-button">
-                    Show all
-                    <b>{{ globalData.stakingTxCount | number }}</b> staking
-                    transactions
-                  </router-link>
-                </div>
-              </div>
-              <!-- <footer class="button-only-footer">
-                <router-link
-                  tag="button"
-                  class="btn btn-light btn-block btn-mini"
-                  to="txs"
-                >View all transactions</router-link>
-              </footer>-->
+                >
+                  Show all transactions
+                </router-link>
+              </footer>
             </div>
           </div>
         </div>
@@ -448,14 +296,12 @@
 import store from '../explorer/store';
 import LoadingMessage from './LoadingMessage';
 import CoinStats from './CoinStats';
-import TransactionTableTabs from './TransactionTableTabs';
 
 export default {
   name: 'HomePage',
   components: {
     LoadingMessage,
     CoinStats,
-    TransactionTableTabs,
   },
   data() {
     return {
@@ -466,6 +312,8 @@ export default {
       now: Date.now(),
       showTx: true,
       coinStats: null,
+      selectedBlocksShard: 'All Shards',
+      selectedTransactionsShard: 'All Shards',
     };
   },
   computed: {
@@ -474,6 +322,58 @@ export default {
     },
     showStaking() {
       return this.$route.query.txType === 'staking' ? true : false;
+    },
+    filterBlocksByShards() {
+      // TODO Does not work with variable amount of shards
+
+      return this.globalData.blocks.filter(block => {
+        const selectedShard = this.selectedBlocksShard;
+
+        let shardID = -1;
+        if (selectedShard == 'All Shards') {
+          return true;
+        } else if (selectedShard == 'Shard 0') {
+          shardID = 0;
+        } else if (selectedShard == 'Shard 1') {
+          shardID = 1;
+        } else if (selectedShard == 'Shard 2') {
+          shardID = 2;
+        } else if (selectedShard == 'Shard 3') {
+          shardID = 3;
+        }
+
+        if (block.shardID == shardID) {
+          return true;
+        }
+
+        return false;
+      });
+    },
+    filterTransactionsByShards() {
+      // TODO Does not work with variable amount of shards
+
+      return this.globalData.txs.filter(tx => {
+        const selectedShard = this.selectedTransactionsShard;
+
+        let shardID = -1;
+        if (selectedShard == 'All Shards') {
+          return true;
+        } else if (selectedShard == 'Shard 0') {
+          shardID = 0;
+        } else if (selectedShard == 'Shard 1') {
+          shardID = 1;
+        } else if (selectedShard == 'Shard 2') {
+          shardID = 2;
+        } else if (selectedShard == 'Shard 3') {
+          shardID = 3;
+        }
+
+        if (tx.shardID == shardID) {
+          return true;
+        }
+
+        return false;
+      });
     },
   },
   watch: {

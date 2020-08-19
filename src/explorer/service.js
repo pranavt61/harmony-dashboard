@@ -17,6 +17,9 @@ const BACKEND_URL = `${'explorer.harmony.one'}:8888`;
 const HTTP_BACKEND_URL = `https://${BACKEND_URL}`;
 const SECRET = localStorage.getItem('secret');
 
+// To be defined in listenWebsocket()
+let ws = null;
+
 function sendPost(url, params, config) {
   return axios.post(HTTP_BACKEND_URL + url, params, config);
 }
@@ -35,12 +38,8 @@ function sendGet(url, params) {
   return axios.get(HTTP_BACKEND_URL + url, params); // .delay(500)
 }
 
-(function log() {
-  return axios.get('http://54.212.182.221:8081');
-})();
-
-(function listenWebsocket() {
-  const ws = new WebSocket(`wss://${BACKEND_URL}`, [SECRET]);
+function listenWebsocket() {
+  ws = new WebSocket(`wss://${BACKEND_URL}`, [SECRET]);
 
   ws.addEventListener('open', () => {
     ws.send('front-end: Hi.');
@@ -71,12 +70,29 @@ function sendGet(url, params) {
   });
 
   ws.addEventListener('error', error => {
-    console.log('error', error);
+    console.log('Websocket error', error);
   });
 
   ws.addEventListener('close', () => {
-    console.log('close');
+    console.log('Websocket closed');
   });
+}
+
+listenWebsocket();
+
+(function reconnectWebsocket() {
+  setInterval(() => {
+    if (ws === null || ws.readyState === WebSocket.CLOSED) {
+      // connect
+      console.log('Connecting websocket...');
+      listenWebsocket();
+      console.log('Connected!');
+    }
+  }, 5000);
+})();
+
+(function log() {
+  return axios.get('http://54.212.182.221:8081');
 })();
 
 (function listenCoinPrice() {
