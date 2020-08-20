@@ -135,23 +135,19 @@
                 <h1 class="flex-grow">
                   Latest Blocks
                 </h1>
-                <select v-model="selectedBlocksShard" class="flex-grow">
-                  <option>All Shards</option>
-                  <option>Shard 0</option>
-                  <option>Shard 1</option>
-                  <option>Shard 2</option>
-                  <option>Shard 3</option>
-                </select>
                 <div class="secondary-info">
-                  <div class="timer">
-                    Updated
-                    {{
-                      Math.round(
-                        Math.max((now - globalData.lastUpdateTime) / 1000, 0)
-                      ) | number
-                    }}s ago...
-                  </div>
-                  <span class="total-block-num" />
+                  <select v-model="selectedBlocksShard">
+                    <option value="-1">
+                      All Shards
+                    </option>
+                    <option
+                      v-for="shard in globalData.shards"
+                      :key="shard.id"
+                      v-bind:value="shard.id"
+                    >
+                      Shard {{ shard.id }}
+                    </option>
+                  </select>
                 </div>
               </header>
               <div class="explorer-card-body">
@@ -213,23 +209,17 @@
                 <h1 class="flex-grow">
                   Latest Transactions
                 </h1>
-                <select v-model="selectedTransactionsShard" class="flex-grow">
-                  <option>All Shards</option>
-                  <option>Shard 0</option>
-                  <option>Shard 1</option>
-                  <option>Shard 2</option>
-                  <option>Shard 3</option>
-                </select>
                 <div class="secondary-info">
-                  <div class="timer">
-                    Updated
-                    {{
-                      Math.round(
-                        Math.max((now - globalData.lastUpdateTime) / 1000, 0)
-                      ) | number
-                    }}s ago...
-                  </div>
-                  <span class="total-block-num" />
+                  <select v-model="selectedTransactionsShard">
+                    <option value="-1">All Shards</option>
+                    <option
+                      v-for="shard in globalData.shards"
+                      :key="shard.id"
+                      v-bind:value="shard.id"
+                    >
+                      Shard {{ shard.id }}
+                    </option>
+                  </select>
                 </div>
               </header>
               <div class="explorer-card-body">
@@ -312,8 +302,8 @@ export default {
       now: Date.now(),
       showTx: true,
       coinStats: null,
-      selectedBlocksShard: 'All Shards',
-      selectedTransactionsShard: 'All Shards',
+      selectedBlocksShard: '-1',
+      selectedTransactionsShard: '-1',
     };
   },
   computed: {
@@ -324,56 +314,22 @@ export default {
       return this.$route.query.txType === 'staking' ? true : false;
     },
     filterBlocksByShards() {
-      // TODO Does not work with variable amount of shards
+      const selectedShard = this.selectedBlocksShard;
 
-      return this.globalData.blocks.filter(block => {
-        const selectedShard = this.selectedBlocksShard;
+      if (selectedShard === '-1') {
+        return this.globalData.blocks;
+      }
 
-        let shardID = -1;
-        if (selectedShard == 'All Shards') {
-          return true;
-        } else if (selectedShard == 'Shard 0') {
-          shardID = 0;
-        } else if (selectedShard == 'Shard 1') {
-          shardID = 1;
-        } else if (selectedShard == 'Shard 2') {
-          shardID = 2;
-        } else if (selectedShard == 'Shard 3') {
-          shardID = 3;
-        }
-
-        if (block.shardID == shardID) {
-          return true;
-        }
-
-        return false;
-      });
+      return this.globalData.shards[selectedShard].blocks;
     },
     filterTransactionsByShards() {
-      // TODO Does not work with variable amount of shards
+      const selectedShard = this.selectedTransactionsShard;
 
-      return this.globalData.txs.filter(tx => {
-        const selectedShard = this.selectedTransactionsShard;
+      if (selectedShard == '-1') {
+        return this.globalData.txs;
+      }
 
-        let shardID = -1;
-        if (selectedShard == 'All Shards') {
-          return true;
-        } else if (selectedShard == 'Shard 0') {
-          shardID = 0;
-        } else if (selectedShard == 'Shard 1') {
-          shardID = 1;
-        } else if (selectedShard == 'Shard 2') {
-          shardID = 2;
-        } else if (selectedShard == 'Shard 3') {
-          shardID = 3;
-        }
-
-        if (tx.shardID == shardID) {
-          return true;
-        }
-
-        return false;
-      });
+      return this.globalData.shards[selectedShard].txs;
     },
   },
   watch: {
