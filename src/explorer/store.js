@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-const Limit = 10;
+const Limit = 20;
 function postprocessBlocks(items) {
   return items
     .sort((a, b) => (Number(a.timestamp) > Number(b.timestamp) ? -1 : 1))
@@ -33,6 +33,7 @@ let store = {
     stakingTxCount: 0,
     nodeCount: 0,
     coinPrice: '0',
+    marketCap: '0',
     lastUpdateTime: 0,
   },
 
@@ -126,6 +127,9 @@ let store = {
   },
   updateCoinPrice(price) {
     this.data.coinPrice = price;
+  },
+  updateMarketCap(price) {
+    this.data.marketCap = price;
   },
   reset() {
     this.data.blocks = [];

@@ -239,6 +239,9 @@ body,
       &.icon-coin-price {
         background-image: url(assets/coin-price.svg);
       }
+      &.icon-market-cap {
+        background-image: url(assets/market-cap.svg);
+      }
     }
   }
 }

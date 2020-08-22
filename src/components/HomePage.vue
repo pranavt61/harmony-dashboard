@@ -100,14 +100,14 @@
               <div class="flex-horizontal">
                 <div class="icon-column">
                   <div class="data-icon-circle">
-                    <div class="data-icon icon-node-count" />
+                    <div class="data-icon icon-market-cap" />
                   </div>
                 </div>
                 <div class="data-num-column">
                   <div class="data-num">
-                    {{ globalData.nodeCount | number }}
+                    {{ globalData.marketCap | number }}
                   </div>
-                  <h1>Node Count</h1>
+                  <h1>Market Cap</h1>
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@
                 </div>
                 <div class="data-num-column">
                   <div class="data-num">
-                    {{ globalData.coinPrice | number }}
+                    {{ Math.round(globalData.coinPrice * 10000) / 10000 }}
                   </div>
                   <h1>Coin Price</h1>
                 </div>
@@ -143,7 +143,7 @@
                     <option
                       v-for="shard in globalData.shards"
                       :key="shard.id"
-                      v-bind:value="shard.id"
+                      :value="shard.id"
                     >
                       Shard {{ shard.id }}
                     </option>
@@ -178,7 +178,7 @@
                     </div>
                     <div class="td">
                       <router-link :to="'/block/' + block.id">
-                        {{ block.id | shorten }}
+                        {{ block.id.substring(0, 8) }}...
                       </router-link>
                     </div>
                     <div class="td">
@@ -211,11 +211,13 @@
                 </h1>
                 <div class="secondary-info">
                   <select v-model="selectedTransactionsShard">
-                    <option value="-1">All Shards</option>
+                    <option value="-1">
+                      All Shards
+                    </option>
                     <option
                       v-for="shard in globalData.shards"
                       :key="shard.id"
-                      v-bind:value="shard.id"
+                      :value="shard.id"
                     >
                       Shard {{ shard.id }}
                     </option>
@@ -250,7 +252,7 @@
                     </div>
                     <div class="td">
                       <router-link :to="'/tx/' + tx.id">
-                        {{ tx.id | shorten }}
+                        {{ tx.id.substring(0, 8) }}...
                       </router-link>
                     </div>
                     <div class="td">
@@ -272,6 +274,21 @@
                 </router-link>
               </footer>
             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <iframe
+              src="https://docs.google.com/forms/d/e/1FAIpQLSfpQ1qJjBNwonJU0Ls0GX9NR7nd0zwWQMTYPX--mQW8earWSA/viewform?embedded=true"
+              width="100%"
+              height="1000"
+              frameborder="0"
+              marginheight="0"
+              marginwidth="0"
+              class="flex-grow"
+            >
+              Loading…
+            </iframe>
           </div>
         </div>
       </div>

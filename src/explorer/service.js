@@ -97,14 +97,17 @@ listenWebsocket();
 
 (function listenCoinPrice() {
   setInterval(() => {
-    axios.get('https://api.cryptonator.com/api/ticker/one-usd').then(res => {
-      if (res.status == 200) {
-        store.updateCoinPrice(res.data.ticker.price);
-      } else {
-        // ERR
-        console.err('COIN PRICE ERROR CODE: ' + res.status);
-      }
-    });
+    axios
+      .get('https://api.coinstats.app/public/v1/coins/harmony?currency=usd')
+      .then(res => {
+        if (res.status == 200) {
+          store.updateCoinPrice(res.data.coin.price);
+          store.updateMarketCap(res.data.coin.marketCap);
+        } else {
+          // ERR
+          console.err('COIN PRICE ERROR CODE: ' + res.status);
+        }
+      });
   }, 1000);
 })();
 
