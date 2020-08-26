@@ -35,6 +35,7 @@ let store = {
     coinPrice: '0',
     marketCap: '0',
     lastUpdateTime: 0,
+    validators: [],
   },
 
   update(data) {
@@ -131,6 +132,9 @@ let store = {
   updateMarketCap(price) {
     this.data.marketCap = price;
   },
+  updateValidators(validators) {
+    this.data.validators = validators;
+  },
   reset() {
     this.data.blocks = [];
     this.data.txs = [];
@@ -142,6 +146,7 @@ let store = {
     this.data.nodes = {};
     this.data.coinPrice = '0';
     this.data.shardCount = 0;
+    this.data.validators = [];
   },
 };
 

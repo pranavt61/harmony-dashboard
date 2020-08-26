@@ -38,7 +38,7 @@ function sendGet(url, params) {
   return axios.get(HTTP_BACKEND_URL + url, params); // .delay(500)
 }
 
-function listenWebsocket() {
+function listenBackendWebsocket() {
   ws = new WebSocket(`wss://${BACKEND_URL}`, [SECRET]);
 
   ws.addEventListener('open', () => {
@@ -78,14 +78,14 @@ function listenWebsocket() {
   });
 }
 
-listenWebsocket();
+listenBackendWebsocket();
 
-(function reconnectWebsocket() {
+(function reconnectBackendWebsocket() {
   setInterval(() => {
     if (ws === null || ws.readyState === WebSocket.CLOSED) {
       // connect
       console.log('Connecting websocket...');
-      listenWebsocket();
+      listenBackendWebsocket();
       console.log('Connected!');
     }
   }, 5000);

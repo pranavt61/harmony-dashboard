@@ -301,6 +301,7 @@
 
 <script>
 import store from '../explorer/store';
+import NodeWebsocket from '../explorer/node-websocket';
 import LoadingMessage from './LoadingMessage';
 import CoinStats from './CoinStats';
 
@@ -357,9 +358,11 @@ export default {
   mounted() {
     this.resetTimer();
 
-    // service.getCoinStats().then(stats => {
-    //   this.coinStats = stats;
-    // });
+    // Update Validator data
+    // Every 10 seconds
+    setInterval(() => {
+      NodeWebsocket.GetValidators();
+    }, 10000);
   },
   methods: {
     changeTab(value) {
