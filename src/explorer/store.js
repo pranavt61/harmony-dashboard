@@ -36,6 +36,7 @@ let store = {
     marketCap: '0',
     lastUpdateTime: 0,
     validators: [],
+    pendingTxs: {},
   },
 
   update(data) {
@@ -135,6 +136,9 @@ let store = {
   updateValidators(validators) {
     this.data.validators = validators;
   },
+  updatePendingTransactions(txs, shardID) {
+    this.data.pendingTxs[shardID] = txs;
+  },
   reset() {
     this.data.blocks = [];
     this.data.txs = [];
@@ -147,6 +151,7 @@ let store = {
     this.data.coinPrice = '0';
     this.data.shardCount = 0;
     this.data.validators = [];
+    this.data.pendingTxs = {};
   },
 };
 

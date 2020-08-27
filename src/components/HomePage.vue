@@ -277,6 +277,105 @@
           </div>
         </div>
         <div class="row">
+          <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="explorer-card latest-block-card">
+              <header>
+                <h1 class="flex-grow">
+                  Validators
+                </h1>
+              </header>
+              <div class="explorer-card-body">
+                <div class="explorer-table-responsive latest-tx-table">
+                  <div class="tr">
+                    <div class="th">
+                      Name
+                    </div>
+                    <div class="th">
+                      Fee Rate
+                    </div>
+                    <div class="th text-right">
+                      Total Stake
+                    </div>
+                  </div>
+                  <div
+                    v-for="v in globalData.validators"
+                    :key="v.name"
+                    class="tr"
+                  >
+                    <div class="td">
+                      <a :href="v.website" target="_blank">
+                        {{ v.name }}
+                      </a>
+                    </div>
+                    <div class="td">
+                      {{ Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%' }}
+                    </div>
+                    <div class="td text-right">
+                      {{ Math.round(v.total_delegation) | number }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="explorer-card latest-block-card">
+              <header>
+                <h1 class="flex-grow">
+                  Pending Transactions (TODO)
+                </h1>
+              </header>
+              <div class="explorer-card-body">
+                <div class="explorer-table-responsive latest-tx-table">
+                  <div class="tr">
+                    <div class="th">
+                      Shard
+                    </div>
+                    <div class="th">
+                      Hash
+                    </div>
+                    <div class="th">
+                      Value
+                    </div>
+                  </div>
+                  <div
+                    v-for="tx in filterTransactionsByShards"
+                    :key="tx.id"
+                    class="tr"
+                  >
+                    <div class="td">
+                      <router-link :to="'/shard/' + tx.shardID">
+                        {{ tx.shardID }}
+                      </router-link>
+                    </div>
+                    <div class="td">
+                      <router-link :to="'/tx/' + tx.id">
+                        {{ tx.id.substring(0, 8) }}...
+                      </router-link>
+                    </div>
+                    <div class="td">
+                      {{ tx.value | amount }}
+                    </div>
+                    <div class="td text-right">
+                      {{ tx.timestamp | age }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <footer class="button-only-footer">
+                <router-link
+                  tag="button"
+                  class="btn btn-light btn-block btn-mini"
+                  to="txs"
+                >
+                  Show all transactions
+                </router-link>
+              </footer>
+            </div>
+          </div>
+
+        </div>
+        <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <iframe
               src="https://docs.google.com/forms/d/e/1FAIpQLSfpQ1qJjBNwonJU0Ls0GX9NR7nd0zwWQMTYPX--mQW8earWSA/viewform?embedded=true"
@@ -359,10 +458,17 @@ export default {
     this.resetTimer();
 
     // Update Validator data
+    // Update Pending Transaction data
     // Every 10 seconds
     setInterval(() => {
       NodeWebsocket.GetValidators();
+      NodeWebsocket.GetPendingTransactions();
     }, 10000);
+
+    setInterval(() => {
+      console.log("Pending Transactions");
+      console.log(this.globalData.pendingTxs);
+    }, 3000);
   },
   methods: {
     changeTab(value) {
