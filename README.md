@@ -1,8 +1,10 @@
-Harmony ONE Explorer Dashboard
-=======
 
-<img align="right" width="120" height="80" src="src/assets/logo.png">
-===========
+<p align="left">
+  <img width="320" height="320" src="src/assets/logo.png">
+</p>
+
+Harmony Explorer
+=======
 
 What is the Harmony ONE Explorer?
 --------------
