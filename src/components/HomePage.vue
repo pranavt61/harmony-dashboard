@@ -376,6 +376,20 @@
         </div>
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="explorer-card latest-block-card">
+              <header>
+                <h1 class="flex-grow">
+                  Transaction Volume (24 Hour)
+                </h1>
+              </header>
+              <div class="explorer-card-body">
+                <canvas id="Transaction-Volume-Chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <iframe
               src="https://docs.google.com/forms/d/e/1FAIpQLSfpQ1qJjBNwonJU0Ls0GX9NR7nd0zwWQMTYPX--mQW8earWSA/viewform?embedded=true"
               width="100%"
@@ -402,6 +416,7 @@ import store from '../explorer/store';
 import NodeWebsocket from '../explorer/node-websocket';
 import LoadingMessage from './LoadingMessage';
 import CoinStats from './CoinStats';
+import Chart from 'chart.js';
 
 export default {
   name: 'HomePage',
@@ -475,6 +490,8 @@ export default {
   mounted() {
     this.resetTimer();
 
+    this.updateTransactionVolumeChart();
+
     // Update Validator data
     // Update Pending Transaction data
     // Every 10 seconds
@@ -496,6 +513,83 @@ export default {
       this.timer = setInterval(() => {
         this.now = Date.now();
       }, 1000);
+    },
+    updateTransactionVolumeChart() {
+      setInterval(() => {
+        let timestamps = this.globalData.txVolume;
+
+        timestamps.sort();
+
+        let min_ts = timestamps[0];
+        let max_tx = timestamps[timestamps.length - 1];
+
+        let data = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < timestamps.length; i++) {
+          if (timestamps[i] === max_tx) {
+            data[data.length - 1]++;
+            continue;
+          }
+          let index = Math.floor((timestamps[i] - min_ts)/((max_tx - min_ts) / data.length));
+          data[index]++;
+        }
+
+        const ctx = document.getElementById('Transaction-Volume-Chart');
+        const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: ['24', '20', '16', '12', '8', '4'],
+              datasets: [{
+                  label: '',
+                  data: data,
+                  backgroundColor: [
+                      'rgba(95, 44, 130, 0.2)',
+                      'rgba(95, 44, 130, 0.2)',
+                      'rgba(95, 44, 130, 0.2)',
+                      'rgba(95, 44, 130, 0.2)',
+                      'rgba(95, 44, 130, 0.2)',
+                      'rgba(95, 44, 130, 0.2)',
+                  ],
+                  borderColor: [
+                      'rgba(95, 44, 130, 1)',
+                      'rgba(95, 44, 130, 1)',
+                      'rgba(95, 44, 130, 1)',
+                      'rgba(95, 44, 130, 1)',
+                      'rgba(95, 44, 130, 1)',
+                      'rgba(95, 44, 130, 1)',
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+            animation: {
+              duration: 0
+            },
+            legend: {
+              display: false,
+            },
+            scales: {
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Hours Ago'
+                },
+                ticks: {
+                  beginAtZero: true
+                }
+              }],
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Frequency'
+                },
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            }
+          }
+        });
+      }, 3000);
     },
   },
 };

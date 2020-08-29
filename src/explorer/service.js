@@ -112,17 +112,41 @@ listenBackendWebsocket();
   }, 1000);
 })();
 
+let txTimestamps = [];
+function txVolume(cursor) {
+  if (cursor == undefined) {
+    cursor = moment().unix() * 1000;
+  }
+
+  let size = 50;
+
+  authGet('/txs-new', { params: { cursor, size } }).then(res => {
+    let txs = res.data.txs;
+
+    let timestamps = new Array(txs.length);
+
+    for (let i = 0; i < txs.length; i++) {
+      timestamps[i] = txs[i]['timestamp'] / 1000;
+    }
+
+    timestamps.sort();
+    txTimestamps.push.apply(txTimestamps, timestamps);
+
+    if (timestamps[0] - 300 > moment().unix() - 86400) {
+      txVolume(timestamps[0] * 1000);
+    } else {
+      // done recursing
+      store.updateTransactionVolume(txTimestamps);
+      txTimestamps = [];
+    }
+  });
+}
+txVolume();
+
 (function listenTransactionVolume() {
   setInterval(() => {
-    let cursor = (moment().unix() - 86400) * 1000;
-    let size = 999999999999;
-
-    authGet('/txs-new', { params: { cursor, size } }).then(res => {
-      let txs = res.data.txs;
-
-      console.log(txs);
-    });
-  }, 1000);
+    txVolume();
+  }, 60000);
 })();
 
 export default {
