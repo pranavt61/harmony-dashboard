@@ -1,5 +1,6 @@
 import axios from 'axios';
 import store from './store';
+import moment from 'moment';
 
 // For test: asios.get('...').delay(1000)
 Promise.prototype.delay = function(time) {
@@ -108,6 +109,19 @@ listenBackendWebsocket();
           console.err('COIN PRICE ERROR CODE: ' + res.status);
         }
       });
+  }, 1000);
+})();
+
+(function listenTransactionVolume() {
+  setInterval(() => {
+    let cursor = (moment().unix() - 86400) * 1000;
+    let size = 999999999999;
+
+    authGet('/txs-new', { params: { cursor, size } }).then(res => {
+      let txs = res.data.txs;
+
+      console.log(txs);
+    });
   }, 1000);
 })();
 

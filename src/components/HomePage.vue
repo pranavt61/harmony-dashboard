@@ -277,7 +277,7 @@
           </div>
         </div>
         <div class="row">
-          <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
@@ -308,7 +308,9 @@
                       </a>
                     </div>
                     <div class="td">
-                      {{ Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%' }}
+                      {{
+                        Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%'
+                      }}
                     </div>
                     <div class="td text-right">
                       {{ Math.round(v.total_delegation) | number }}
@@ -318,12 +320,26 @@
               </div>
             </div>
           </div>
-          <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
-                  Pending Transactions (TODO)
+                  Pending Transactions
                 </h1>
+                <div class="secondary-info">
+                  <select v-model="selectedPendingTransactionsShard">
+                    <option value="-1">
+                      All Shards
+                    </option>
+                    <option
+                      v-for="shard in globalData.shards"
+                      :key="shard.id"
+                      :value="shard.id"
+                    >
+                      Shard {{ shard.id }}
+                    </option>
+                  </select>
+                </div>
               </header>
               <div class="explorer-card-body">
                 <div class="explorer-table-responsive latest-tx-table">
@@ -334,46 +350,29 @@
                     <div class="th">
                       Hash
                     </div>
-                    <div class="th">
+                    <div class="th text-right">
                       Value
                     </div>
                   </div>
                   <div
-                    v-for="tx in filterTransactionsByShards"
-                    :key="tx.id"
+                    v-for="tx in filterPendingTransactionsByShards"
+                    :key="tx.hash"
                     class="tr"
                   >
                     <div class="td">
-                      <router-link :to="'/shard/' + tx.shardID">
-                        {{ tx.shardID }}
-                      </router-link>
+                      {{ tx.shard }}
                     </div>
                     <div class="td">
-                      <router-link :to="'/tx/' + tx.id">
-                        {{ tx.id.substring(0, 8) }}...
-                      </router-link>
-                    </div>
-                    <div class="td">
-                      {{ tx.value | amount }}
+                      {{ tx.hash.substring(0,40) }}...
                     </div>
                     <div class="td text-right">
-                      {{ tx.timestamp | age }}
+                      {{ tx.value | amount }}
                     </div>
                   </div>
                 </div>
               </div>
-              <footer class="button-only-footer">
-                <router-link
-                  tag="button"
-                  class="btn btn-light btn-block btn-mini"
-                  to="txs"
-                >
-                  Show all transactions
-                </router-link>
-              </footer>
             </div>
           </div>
-
         </div>
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -421,6 +420,7 @@ export default {
       coinStats: null,
       selectedBlocksShard: '-1',
       selectedTransactionsShard: '-1',
+      selectedPendingTransactionsShard: '-1',
     };
   },
   computed: {
@@ -448,6 +448,24 @@ export default {
 
       return this.globalData.shards[selectedShard].txs;
     },
+    filterPendingTransactionsByShards() {
+      const selectedShard = this.selectedPendingTransactionsShard;
+      const pendingTxs = this.globalData.pendingTxs;
+
+      if (selectedShard == '-1') {
+        let txs = [];
+
+        for (let shard in pendingTxs) {
+          if (Object.prototype.hasOwnProperty.call(pendingTxs, shard)) {
+            txs.push.apply(txs, pendingTxs[shard]);
+          }
+        }
+
+        return txs;
+      }
+
+      return pendingTxs[selectedShard];
+    },
   },
   watch: {
     globalData() {
@@ -464,11 +482,6 @@ export default {
       NodeWebsocket.GetValidators();
       NodeWebsocket.GetPendingTransactions();
     }, 10000);
-
-    setInterval(() => {
-      console.log("Pending Transactions");
-      console.log(this.globalData.pendingTxs);
-    }, 3000);
   },
   methods: {
     changeTab(value) {
