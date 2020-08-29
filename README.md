@@ -1,8 +1,7 @@
-Harmony ONE Explorer Dashboard
-=======
+<img align="right" width="400" height="400" src="src/assets/logo.png">
 
-<img align="right" width="120" height="80" src="src/assests/logo.png">
-===========
+Harmony Explorer
+=======
 
 What is the Harmony ONE Explorer?
 --------------
@@ -10,8 +9,8 @@ What is the Harmony ONE Explorer?
 [Harmony](https://www.harmony.one/) is a fast and secure blockchain for decentralized applications.
 Our production mainnet supports 4 shards of 1000 nodes, producing blocks in 5 seconds with finality.
 
-[The Explorer](http://54.212.182.221:8080/#/) allows users from all backgrounds to view and explorer the Harmony Blockchain.
-Making visible latest blocks, pending transactions, top validators, and much more!
+[The Explorer](http://54.212.182.221:8080/#/) allows users from all backgrounds to view and explorer the Harmony Blockchain by
+making visible the latest blocks, pending transactions, top validators, and much more!
 
 ## Build Setup
 
