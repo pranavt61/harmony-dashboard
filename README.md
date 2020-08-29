@@ -1,7 +1,4 @@
-
-<p align="left">
-  <img width="320" height="320" src="src/assets/logo.png">
-</p>
+<img align="right" width="400" height="400" src="src/assets/logo.png">
 
 Harmony Explorer
 =======
