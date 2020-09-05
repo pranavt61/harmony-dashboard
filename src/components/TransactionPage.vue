@@ -36,7 +36,9 @@
                 <td class="td-title">
                   Status:
                 </td>
-                <td>{{ transaction.status | txStatus }}</td>
+                <td>
+                  {{ transaction.status | txStatus }}
+                </td>
               </tr>
               <tr v-if="isFailedTransaction">
                 <td class="td-title">
@@ -44,7 +46,7 @@
                 </td>
                 <td>{{ transaction.message }}</td>
               </tr>
-              <tr>
+              <tr v-if="transaction.status !== 'PENDING'">
                 <td class="td-title">
                   Block:
                 </td>
@@ -54,7 +56,7 @@
                   </router-link>
                 </td>
               </tr>
-              <tr v-if="transaction.shardID === transaction.toShardID">
+              <tr v-if="!isStaking && transaction.shardID === transaction.toShardID">
                 <td class="td-title">
                   Shard:
                 </td>
@@ -94,7 +96,7 @@
                   </router-link>
                 </td>
               </tr>
-              <tr>
+              <tr v-if="transaction.status !== 'PENDING'">
                 <td class="td-title">
                   Timestamp:
                 </td>
@@ -127,7 +129,7 @@
               </tr>
               <tr v-if="!isStaking">
                 <td class="td-title">
-                  To Address
+                  To Address:
                 </td>
                 <td class="address_link">
                   <router-link
@@ -145,7 +147,7 @@
                 </td>
               </tr>
               <tr v-if="isStaking">
-                <td class="td-title">Validator Address</td>
+                <td class="td-title">Validator Address:</td>
                 <td class="address_link">
                   <router-link
                     v-if="transaction.validator"
@@ -156,6 +158,12 @@
                     {{ transaction.validator }}
                   </router-link>
                   <span v-else>-</span>
+                  <button
+                    class="btn btn-light btn-icon-only"
+                    v-on:click="eventClipBoardButton(transaction.validator)"
+                  >
+                    <font-awesome-icon :icon="['far', 'copy']" />
+                  </button>
                 </td>
               </tr>
               <tr v-if="isStaking">
@@ -170,6 +178,12 @@
                     {{ transaction.delegator }}
                   </router-link>
                   <span v-else>-</span>
+                  <button
+                    class="btn btn-light btn-icon-only"
+                    v-on:click="eventClipBoardButton(transaction.delegator)"
+                  >
+                    <font-awesome-icon :icon="['far', 'copy']" />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -180,7 +194,7 @@
                   -
                 </td>
                 <td v-else>
-                  {{ transaction.value | amount }} ONE (${{ getFiatValue(transaction.value) }})
+                  {{ transaction.value | amount }} ONE (${{ getFiatValue(transaction.value / 10 ** 18) }})
                 </td>
               </tr>
               <tr>
@@ -188,7 +202,7 @@
                   Transaction Fee:
                 </td>
                 <td>
-                  {{ normalizedGas() }} ONE ${{ getFiatValue(Number(normalizedGas())) }})
+                  {{ normalizedGas() }} ONE (${{ getFiatValue(Number(normalizedGas())) }})
                 </td>
               </tr>
               <tr>
@@ -205,13 +219,39 @@
                 </td>
                 <td>{{ sequence }}</td>
               </tr>
-              <tr>
-                <td class="td-title">
-                  Nonce
-                </td>
-                <td>{{ parseInt(transaction.nonce) }}</td>
-              </tr>
             </table>
+
+            <expand-panel>
+              <table class="explorer-table">
+                <tr />
+                <tr v-if="isStaking">
+                  <td class="td-title">
+                    Data
+                  </td>
+                  <td>
+                    <vue-json-pretty :data="transaction.msg" />
+                  </td>
+                </tr>
+                <tr v-if="!isStaking">
+                  <td class="td-title">
+                    Data (Hex)
+                  </td>
+                  <td>{{ transaction.input || '—' }}</td>
+                </tr>
+                <tr v-if="!isStaking">
+                  <td class="td-title">
+                    Data (UTF-8)
+                  </td>
+                  <td>{{ hexToUTF8(transaction.input) || '—' }}</td>
+                </tr>
+                <tr>
+                  <td class="td-title">
+                    Nonce
+                  </td>
+                  <td>{{ parseInt(transaction.nonce) }}</td>
+                </tr>
+              </table>
+            </expand-panel>
           </div>
         </div>
       </div>
@@ -271,6 +311,12 @@ export default {
   mounted() {
     this.getTransaction();
 
+    setInterval(() => {
+      if (this.transaction == null) {
+        this.getTransaction();
+      }
+    },500);
+
     setTimeout(() => {
       console.log(this.transaction);
     },3000);
@@ -301,6 +347,9 @@ export default {
 
       getTx(routeTxId)
         .then(transaction => {
+          if (transaction === null) {
+            return;
+          }
           if (
             transaction &&
             transaction.id &&
@@ -375,7 +424,13 @@ export default {
       );
     },
     getFiatValue(value) {
-      return (value * parseFloat(this.globalData.coinPrice)).toPrecision(2);
+      value = (value * parseFloat(this.globalData.coinPrice));
+
+      if (value < 0) {
+        return value.toPrecision(2).toString();
+      }
+
+      return value.toString();
     },
     eventClipBoardButton(newClip) {
       const el = document.createElement('textarea');

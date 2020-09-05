@@ -148,7 +148,6 @@ let store = {
   },
   updateTransactionVolume(volume) {
     this.data.txVolume = [...volume];
-    console.log(this.data.txVolume);
   },
   reset() {
     this.data.blocks = [];

@@ -367,7 +367,11 @@
                     <div class="td">
                       {{ tx.shard }}
                     </div>
-                    <div class="td">{{ tx.hash.substring(0, 40) }}...</div>
+                    <div class="td">
+                      <router-link :to="'/tx/' + tx.hash">
+                        {{ tx.hash.substring(0, 8) }}...
+                      </router-link>
+                    </div>
                     <div class="td text-right">
                       {{ tx.value | amount }}
                     </div>

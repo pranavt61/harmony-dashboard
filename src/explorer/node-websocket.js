@@ -114,9 +114,16 @@ function ConnectShardWS() {
 
               pendingTX.push({
                 from: tx['from'],
+                to: tx['to'],
                 hash: tx['hash'],
                 shard: tx['shardID'],
                 value: tx['value'],
+                shardID: tx['shardID'],
+                toShardID: tx['toShardID'],
+                gas: tx['gas'],
+                gasPrice: tx['gasPrice'],
+                nonce: tx['nonce'],
+                status: 'PENDING',
               });
             }
 

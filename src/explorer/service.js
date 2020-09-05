@@ -187,6 +187,20 @@ export default {
     return authGet('/tx', { params: { id } }).then(res => {
       let tx = res.data.tx;
 
+      // Check if pending
+      if (tx.err !== null) {
+        for (var shard in store.data.pendingTxs) {
+          if (store.data.pendingTxs.hasOwnProperty(shard)) {
+            for (let t in store.data.pendingTxs[shard]) {
+              if (store.data.pendingTxs[shard][t].hash === id) {
+                return store.data.pendingTxs[shard][t];
+              }
+            }
+          }
+        }
+        return null;
+      }
+
       return tx;
     });
   },
