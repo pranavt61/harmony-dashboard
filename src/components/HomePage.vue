@@ -33,6 +33,11 @@
   .total-txs {
     margin-right: 20px;
   }
+
+  .header-no-dropdown {
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
 }
 
 .show-more-container {
@@ -205,6 +210,51 @@
           </div>
           <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
+              <header class="header-no-dropdown">
+                <h1 class="flex-grow">
+                  Validators
+                </h1>
+              </header>
+              <div class="explorer-card-body">
+                <div class="explorer-table-responsive latest-tx-table">
+                  <div class="tr">
+                    <div class="th">
+                      Name
+                    </div>
+                    <div class="th">
+                      Fee Rate
+                    </div>
+                    <div class="th text-right">
+                      Total Stake
+                    </div>
+                  </div>
+                  <div
+                    v-for="v in globalData.validators"
+                    :key="v.name"
+                    class="tr"
+                  >
+                    <div class="td">
+                      <a :href="v.website" target="_blank">
+                        {{ v.name }}
+                      </a>
+                    </div>
+                    <div class="td">
+                      {{
+                        Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%'
+                      }}
+                    </div>
+                    <div class="td text-right">
+                      {{ Math.round(v.total_delegation) | number }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
                   Latest Transactions
@@ -275,51 +325,6 @@
               </footer>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            <div class="explorer-card latest-block-card">
-              <header>
-                <h1 class="flex-grow">
-                  Validators
-                </h1>
-              </header>
-              <div class="explorer-card-body">
-                <div class="explorer-table-responsive latest-tx-table">
-                  <div class="tr">
-                    <div class="th">
-                      Name
-                    </div>
-                    <div class="th">
-                      Fee Rate
-                    </div>
-                    <div class="th text-right">
-                      Total Stake
-                    </div>
-                  </div>
-                  <div
-                    v-for="v in globalData.validators"
-                    :key="v.name"
-                    class="tr"
-                  >
-                    <div class="td">
-                      <a :href="v.website" target="_blank">
-                        {{ v.name }}
-                      </a>
-                    </div>
-                    <div class="td">
-                      {{
-                        Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%'
-                      }}
-                    </div>
-                    <div class="td text-right">
-                      {{ Math.round(v.total_delegation) | number }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
@@ -362,9 +367,7 @@
                     <div class="td">
                       {{ tx.shard }}
                     </div>
-                    <div class="td">
-                      {{ tx.hash.substring(0,40) }}...
-                    </div>
+                    <div class="td">{{ tx.hash.substring(0, 40) }}...</div>
                     <div class="td text-right">
                       {{ tx.value | amount }}
                     </div>
@@ -529,7 +532,9 @@ export default {
             data[data.length - 1]++;
             continue;
           }
-          let index = Math.floor((timestamps[i] - min_ts)/((max_tx - min_ts) / data.length));
+          let index = Math.floor(
+            (timestamps[i] - min_ts) / ((max_tx - min_ts) / data.length)
+          );
           data[index]++;
         }
 
@@ -537,57 +542,63 @@ export default {
         const myChart = new Chart(ctx, {
           type: 'bar',
           data: {
-              labels: ['24', '20', '16', '12', '8', '4'],
-              datasets: [{
-                  label: '',
-                  data: data,
-                  backgroundColor: [
-                      'rgba(95, 44, 130, 0.2)',
-                      'rgba(95, 44, 130, 0.2)',
-                      'rgba(95, 44, 130, 0.2)',
-                      'rgba(95, 44, 130, 0.2)',
-                      'rgba(95, 44, 130, 0.2)',
-                      'rgba(95, 44, 130, 0.2)',
-                  ],
-                  borderColor: [
-                      'rgba(95, 44, 130, 1)',
-                      'rgba(95, 44, 130, 1)',
-                      'rgba(95, 44, 130, 1)',
-                      'rgba(95, 44, 130, 1)',
-                      'rgba(95, 44, 130, 1)',
-                      'rgba(95, 44, 130, 1)',
-                  ],
-                  borderWidth: 1
-              }]
+            labels: ['24', '20', '16', '12', '8', '4'],
+            datasets: [
+              {
+                label: '',
+                data: data,
+                backgroundColor: [
+                  'rgba(95, 44, 130, 0.2)',
+                  'rgba(95, 44, 130, 0.2)',
+                  'rgba(95, 44, 130, 0.2)',
+                  'rgba(95, 44, 130, 0.2)',
+                  'rgba(95, 44, 130, 0.2)',
+                  'rgba(95, 44, 130, 0.2)',
+                ],
+                borderColor: [
+                  'rgba(95, 44, 130, 1)',
+                  'rgba(95, 44, 130, 1)',
+                  'rgba(95, 44, 130, 1)',
+                  'rgba(95, 44, 130, 1)',
+                  'rgba(95, 44, 130, 1)',
+                  'rgba(95, 44, 130, 1)',
+                ],
+                borderWidth: 1,
+              },
+            ],
           },
           options: {
             animation: {
-              duration: 0
+              duration: 0,
             },
             legend: {
               display: false,
             },
             scales: {
-              xAxes: [{
-                scaleLabel: {
-                  display: true,
-                  labelString: 'Hours Ago'
+              xAxes: [
+                {
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'Hours Ago',
+                  },
+                  ticks: {
+                    beginAtZero: true,
+                  },
                 },
-                ticks: {
-                  beginAtZero: true
-                }
-              }],
-              yAxes: [{
-                scaleLabel: {
-                  display: true,
-                  labelString: 'Frequency'
+              ],
+              yAxes: [
+                {
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'Frequency',
+                  },
+                  ticks: {
+                    beginAtZero: true,
+                  },
                 },
-                ticks: {
-                  beginAtZero: true
-                }
-              }]
-            }
-          }
+              ],
+            },
+          },
         });
       }, 3000);
     },

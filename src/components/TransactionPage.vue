@@ -14,67 +14,39 @@
             <table class="explorer-table">
               <tr v-if="isStaking">
                 <td class="td-title">
-                  Type
+                  Type:
                 </td>
                 <td>{{ transaction.type }}</td>
               </tr>
               <tr>
                 <td class="td-title">
-                  ID
+                  Hash:
                 </td>
-                <td>{{ transaction.hash || $route.params.transactionId }}</td>
+                <td>
+                  {{ transaction.hash || $route.params.transactionId }}
+                  <button
+                    class="btn btn-light btn-icon-only"
+                    v-on:click="eventClipBoardButton(transaction.hash)"
+                  >
+                    <font-awesome-icon :icon="['far', 'copy']" />
+                  </button>
+                </td>
               </tr>
               <tr>
                 <td class="td-title">
-                  Status
+                  Status:
                 </td>
                 <td>{{ transaction.status | txStatus }}</td>
               </tr>
               <tr v-if="isFailedTransaction">
                 <td class="td-title">
-                  Reason
+                  Reason:
                 </td>
                 <td>{{ transaction.message }}</td>
               </tr>
               <tr>
                 <td class="td-title">
-                  Value
-                </td>
-                <td v-if="isStaking && transaction.type === 'EditValidator'">
-                  -
-                </td>
-                <td v-else>{{ transaction.value | amount }}</td>
-              </tr>
-
-              <!-- <tr>
-                <td class="td-title">Size (bytes)</td>
-                <td>{{ transaction.bytes }}</td>
-              </tr>-->
-              <!-- <tr>
-                <td class="td-title">Received Time</td>
-                <td>{{ transaction.receivedTime }}</td>
-              </tr>-->
-              <tr>
-                <td class="td-title">
-                  Timestamp
-                </td>
-                <td>
-                  {{ (Number(transaction.timestamp) * 1000) | timestamp }}
-                </td>
-              </tr>
-              <tr>
-                <td class="td-title">
-                  {{
-                    transaction.shardID === transaction.toShardID
-                      ? 'Shard ID'
-                      : 'From Shard'
-                  }}
-                </td>
-                <td>{{ transaction.shardID }}</td>
-              </tr>
-              <tr>
-                <td class="td-title">
-                  Sender shard block
+                  Block:
                 </td>
                 <td>
                   <router-link :to="'/block/' + transaction.blockHash">
@@ -82,9 +54,60 @@
                   </router-link>
                 </td>
               </tr>
+              <tr v-if="transaction.shardID === transaction.toShardID">
+                <td class="td-title">
+                  Shard:
+                </td>
+                <td>
+                  <router-link :to="'/shard/' + transaction.shardID">
+                    {{ transaction.shardID | number }}
+                  </router-link>
+                </td>
+              </tr>
+              <tr v-if="transaction.shardID !== transaction.toShardID">
+                <td class="td-title">
+                  From Shard:
+                </td>
+                <td>
+                  <router-link :to="'/shard/' + transaction.shardID">
+                    {{ transaction.shardID | number }}
+                  </router-link>
+                </td>
+              </tr>
+              <tr v-if="transaction.shardID !== transaction.toShardID">
+                <td class="td-title">
+                  To Shard:
+                </td>
+                <td>
+                  <router-link :to="'/shard/' + transaction.toShardID">
+                    {{ transaction.toShardID | number }}
+                  </router-link>
+                </td>
+              </tr>
+              <tr v-if="receipt">
+                <td class="td-title">
+                  Receiving shard block:
+                </td>
+                <td>
+                  <router-link :to="'/block/' + receipt.blockHash">
+                    {{ Number(receipt.blockNumber) }}
+                  </router-link>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-title">
+                  Timestamp:
+                </td>
+                <td>
+                  <font-awesome-icon :icon="['far', 'clock']" />
+                  {{ Number(transaction.timestamp) * 1000 | age }}
+                  ({{ (Number(transaction.timestamp) * 1000) | timestamp }})
+                </td>
+              </tr>
+              
               <tr v-if="!isStaking">
                 <td class="td-title">
-                  From Address
+                  From Address:
                 </td>
                 <td class="address_link">
                   <router-link
@@ -93,22 +116,13 @@
                   >
                     {{ transaction.from }}
                   </router-link>
-                </td>
-              </tr>
-              <tr v-if="transaction.shardID !== transaction.toShardID">
-                <td class="td-title">
-                  To Shard
-                </td>
-                <td>{{ transaction.toShardID }}</td>
-              </tr>
-              <tr v-if="receipt">
-                <td class="td-title">
-                  Receiving shard block
-                </td>
-                <td>
-                  <router-link :to="'/block/' + receipt.blockHash">
-                    {{ Number(receipt.blockNumber) }}
-                  </router-link>
+                  <button
+                    class="btn btn-light btn-icon-only"
+                    v-on:click="eventClipBoardButton(transaction.from)"
+                  >
+                    <font-awesome-icon :icon="['far', 'copy']" />
+                  </button>
+
                 </td>
               </tr>
               <tr v-if="!isStaking">
@@ -122,9 +136,14 @@
                   >
                     {{ transaction.to }}
                   </router-link>
+                  <button
+                    class="btn btn-light btn-icon-only"
+                    v-on:click="eventClipBoardButton(transaction.to)"
+                  >
+                    <font-awesome-icon :icon="['far', 'copy']" />
+                  </button>
                 </td>
               </tr>
-
               <tr v-if="isStaking">
                 <td class="td-title">Validator Address</td>
                 <td class="address_link">
@@ -133,8 +152,9 @@
                     :to="
                       '/address/' + transaction.validator + '?txType=staking'
                     "
-                    >{{ transaction.validator }}</router-link
                   >
+                    {{ transaction.validator }}
+                  </router-link>
                   <span v-else>-</span>
                 </td>
               </tr>
@@ -146,57 +166,52 @@
                     :to="
                       '/address/' + transaction.delegator + '?txType=staking'
                     "
-                    >{{ transaction.delegator }}</router-link
                   >
+                    {{ transaction.delegator }}
+                  </router-link>
                   <span v-else>-</span>
                 </td>
               </tr>
-
               <tr>
                 <td class="td-title">
-                  Network Fee
+                  Value:
                 </td>
-                <td>{{ normalizedGas() }} ONE</td>
+                <td v-if="isStaking && transaction.type === 'EditValidator'">
+                  -
+                </td>
+                <td v-else>
+                  {{ transaction.value | amount }} ONE (${{ getFiatValue(transaction.value) }})
+                </td>
+              </tr>
+              <tr>
+                <td class="td-title">
+                  Transaction Fee:
+                </td>
+                <td>
+                  {{ normalizedGas() }} ONE ${{ getFiatValue(Number(normalizedGas())) }})
+                </td>
+              </tr>
+              <tr>
+                <td class="td-title">
+                  Gas Price:
+                </td>
+                <td>
+                  {{ transaction.gasPrice }} Atto
+                </td>
               </tr>
               <tr v-if="sequence">
                 <td class="td-title">
-                  Sequence
+                  Sequence:
                 </td>
                 <td>{{ sequence }}</td>
               </tr>
+              <tr>
+                <td class="td-title">
+                  Nonce
+                </td>
+                <td>{{ parseInt(transaction.nonce) }}</td>
+              </tr>
             </table>
-
-            <expand-panel>
-              <table class="explorer-table">
-                <tr />
-                <tr v-if="isStaking">
-                  <td class="td-title">
-                    Data
-                  </td>
-                  <td>
-                    <vue-json-pretty :data="transaction.msg" />
-                  </td>
-                </tr>
-                <tr v-if="!isStaking">
-                  <td class="td-title">
-                    Data (Hex)
-                  </td>
-                  <td>{{ transaction.input || '-' }}</td>
-                </tr>
-                <tr v-if="!isStaking">
-                  <td class="td-title">
-                    Data (UTF-8)
-                  </td>
-                  <td>{{ hexToUTF8(transaction.input) || '-' }}</td>
-                </tr>
-                <tr>
-                  <td class="td-title">
-                    Nonce
-                  </td>
-                  <td>{{ parseInt(transaction.nonce) }}</td>
-                </tr>
-              </table>
-            </expand-panel>
           </div>
         </div>
       </div>
@@ -255,6 +270,10 @@ export default {
   },
   mounted() {
     this.getTransaction();
+
+    setTimeout(() => {
+      console.log(this.transaction);
+    },3000);
   },
   methods: {
     getSequence() {
@@ -293,11 +312,6 @@ export default {
             );
             return;
           }
-
-          // console.log(
-          //   `transaction ${routeTxId} found. data: ` +
-          //     `${JSON.stringify(transaction)}`
-          // );
 
           if (this.isStaking) {
             this.transaction = {
@@ -340,7 +354,6 @@ export default {
         return decodeURIComponent(escape(s));
       } catch (e) {
         return null;
-        // return "[Unknown Binary Content]";
       }
     },
     hexToAscii(h) {
@@ -357,10 +370,20 @@ export default {
           10 ** 14 /
           10000;
 
-      // return Math.round(fee * 10 ** 9) / 10 ** 9;
       return Intl.NumberFormat('en-US', { maximumFractionDigits: 18 }).format(
         fee
       );
+    },
+    getFiatValue(value) {
+      return (value * parseFloat(this.globalData.coinPrice)).toPrecision(2);
+    },
+    eventClipBoardButton(newClip) {
+      const el = document.createElement('textarea');
+      el.value = newClip;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
     },
   },
 };
