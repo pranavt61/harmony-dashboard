@@ -13,7 +13,7 @@ window.hmy = hmy
 const HRC20_ABI = require('./HRC20_ABI.json')
 const HRC20_LIST = []
 
-const Limit = 10
+const Limit = 20
 function postprocessBlocks(items) {
   return items
     .sort((a, b) => (Number(a.timestamp) > Number(b.timestamp) ? -1 : 1))
