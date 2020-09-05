@@ -369,7 +369,7 @@
                     </div>
                     <div class="td">
                       <router-link :to="'/tx/' + tx.hash">
-                        {{ tx.hash.substring(0, 8) }}...
+                        {{ tx.hash.substring(0, 32) }}...
                       </router-link>
                     </div>
                     <div class="td text-right">
