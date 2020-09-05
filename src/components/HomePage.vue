@@ -1,5 +1,22 @@
 <style scoped lang="less">
 @import '../less/common.less';
+.shard {
+  width: 25%;
+  display: inline-block;
+
+  td {
+    word-break: unset;
+  }
+
+  .td-title {
+    width: 11em;
+  }
+
+  .explorer-card-body {
+    min-height: auto;
+    padding-right: 0;
+  }
+}
 
 .explorer-card-body {
   min-height: 24em;
@@ -133,6 +150,7 @@
             </div>
           </div>
         </div>
+
         <div class="row">
           <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
@@ -443,10 +461,47 @@ export default {
   },
   computed: {
     length() {
-      return Math.ceil(this.globalData.blocks.length / this.pageSize);
+      return Math.ceil(this.globalData.blocks.length / this.pageSize)
     },
-    showStaking() {
-      return this.$route.query.txType === 'staking' ? true : false;
+    showWhich() {
+      return this.$route.query.txType || 'regular' // 'staking','regular','hrc20';
+    },
+    tabValue() {
+      const status = { staking: 1, regular: 0, hrc20: 2 }
+      return status[this.$route.query.txType] || 0
+    },
+    lastBlocks() {
+      return Object.values(this.$store.data.shards).map(
+        shard => shard.blocks[0]
+      )
+    },
+    Hrc20Address() {
+      return this.$store.data.Hrc20Address
+    },
+    Hrc20Txs() {
+      return this.$store.data.hrc20Txs.reduce((list, tx) => {
+        const c = this.$store.data.hmy.contract(this.$store.data.HRC20_ABI)
+        const decodeObj = c.decodeInput(tx.input)
+        if (decodeObj.abiItem && decodeObj.abiItem.name == 'transfer')
+          list.push({
+            tx,
+            hrc20tx: {
+              from: tx.from,
+              to: decodeObj.params[0],
+              amount: decodeObj.params[1],
+            },
+          })
+        else if (decodeObj.abiItem && decodeObj.abiItem.name == 'transferFrom')
+          list.push({
+            tx,
+            hrc20tx: {
+              from: decodeObj.params[0],
+              to: decodeObj.params[1],
+              amount: decodeObj.params[2],
+            },
+          })
+        return list
+      }, [])
     },
     filterBlocksByShards() {
       const selectedShard = this.selectedBlocksShard;
@@ -487,7 +542,10 @@ export default {
   },
   watch: {
     globalData() {
-      this.resetTimer();
+      this.resetTimer()
+    },
+    Hrc20Address() {
+      this.updateHolders()
     },
   },
   mounted() {
@@ -504,18 +562,44 @@ export default {
     }, 10000);
   },
   methods: {
+    hrc20info(id) {
+      return this.$store.data.Hrc20Address[id]
+    },
+    hrc20Balance(id, amount) {
+      if (!this.hrc20info(id)) {
+        return amount
+      }
+
+      return (
+        displayAmount(amount, this.hrc20info(id).decimals) +
+        ' ' +
+        this.hrc20info(id).symbol
+      )
+    },
+    async updateHolders() {
+      let tokenHolders = []
+      for (let hrc20 in this.Hrc20Address)
+        tokenHolders.push({ id: hrc20, holders: 10000 })
+      this.tokenHolders = tokenHolders
+    },
+    bech32(hexaddr) {
+      return this.$store.data.hmy.hmySDK.crypto.toBech32(hexaddr)
+    },
     changeTab(value) {
+      let txType = 'regular'
+      if (value == 1) txType = 'staking'
+      if (value == 2) txType = 'hrc20'
       this.$router.replace({
         name: 'HomePage',
-        query: { txType: value ? 'staking' : 'regular' },
-      });
+        query: { txType },
+      })
     },
     resetTimer() {
-      clearInterval(this.timer);
-      this.now = Date.now();
+      clearInterval(this.timer)
+      this.now = Date.now()
       this.timer = setInterval(() => {
-        this.now = Date.now();
-      }, 1000);
+        this.now = Date.now()
+      }, 1000)
     },
     updateTransactionVolumeChart() {
       setInterval(() => {
@@ -603,5 +687,5 @@ export default {
       }, 3000);
     },
   },
-};
+}
 </script>
