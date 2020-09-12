@@ -596,10 +596,6 @@ export default {
         // add canvas element
         let chart_canvas_el_add = document.createElement("CANVAS");
         chart_canvas_el_add.setAttribute('id', "Transaction-Volume-Chart");
-
-        console.log("EL")
-        console.log(chart_canvas_el_add)
-
         document.getElementById("Transaction-Volume-Body").appendChild(chart_canvas_el_add);
 
         let timestamps = res.data;
@@ -612,8 +608,50 @@ export default {
         }
 
         let labels = [];
+        let num_labels = 5;
         for (let i = 0; i < num_bars; i ++) {
-          labels.push('');
+          if (i % Math.floor(num_bars / num_labels) == 0) {
+            let time_selected = parseInt(this.selectedTransactionVolumeTimeframe);
+            if (time_selected == -1) {
+              // Selected all time
+              // HARDCODED
+              // Timestamp of first block in shard 0 is        1561736306
+              time_selected = (Math.floor(Date.now() / 1000) - 1561736306);
+
+              // convert seconds to hours
+              time_selected = Math.floor(time_selected / 3600);
+            }
+
+            let ts = Math.round(new Date().getTime() / 1000);
+            let hoursAgo = time_selected - Math.floor((i * time_selected) / num_bars); 
+            let dateAgo = new Date((ts - (hoursAgo * 3600)) * 1000);
+            
+            if (time_selected == 24) {
+              // hour labels
+              let h = dateAgo.getHours();
+              let m = '00';
+
+              var AMPM = (h >= 12)? " PM":" AM";
+              if (h > 12) h = h - 12;
+              if (h < 1) h = h + 12;
+
+              labels.push(h + ':' + m + AMPM);
+            } else {
+              // date labels
+              let m = dateAgo.getMonth();
+              let d = dateAgo.getDate();
+
+              // only show year when selected All Time
+              let y = (this.selectedTransactionVolumeTimeframe == '-1') ?
+                (' ' + dateAgo.getFullYear()) : '';
+
+              m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
+
+              labels.push(m + " '" + d + y);
+            }
+          } else {
+            labels.push('');
+          }
         }
 
         let backgroundColor = [];
@@ -665,11 +703,11 @@ export default {
               xAxes: [
                 {
                   scaleLabel: {
-                    display: true,
-                    labelString: 'Hours Ago',
+                    display: false
                   },
                   ticks: {
-                    beginAtZero: true,
+                    maxRotation: 0,
+                    minRotation: 0
                   },
                 },
               ],
