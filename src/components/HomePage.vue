@@ -386,11 +386,33 @@
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
-                  Transaction Volume (24 Hour)
+                  Transaction Volume
                 </h1>
+                <div class="secondary-info">
+                  <select v-model="selectedTransactionVolumeTimeframe">
+                    <option value="24">
+                      24 hours
+                    </option>
+                    <option value="168">
+                      7 days
+                    </option>
+                    <option value="720">
+                      1 month
+                    </option>
+                    <option value="8760">
+                      1 year
+                    </option>
+                    <option value="-1">
+                      All time
+                    </option>
+                  </select>
+                </div>
               </header>
               <div class="explorer-card-body">
-                <canvas id="Transaction-Volume-Chart"></canvas>
+                <div id="Transaction-Volume-Body"></div>
+                <div v-if="loadingTransactionVolumeChart">
+                  <loading-message />
+                </div>
               </div>
             </div>
           </div>
@@ -420,6 +442,7 @@
 
 <script>
 import store from '../explorer/store';
+import service from '../explorer/service';
 import NodeWebsocket from '../explorer/node-websocket';
 import LoadingMessage from './LoadingMessage';
 import CoinStats from './CoinStats';
@@ -440,9 +463,13 @@ export default {
       now: Date.now(),
       showTx: true,
       coinStats: null,
+
+      loadingTransactionVolumeChart: true,
+
       selectedBlocksShard: '-1',
       selectedTransactionsShard: '-1',
       selectedPendingTransactionsShard: '-1',
+      selectedTransactionVolumeTimeframe: '24', // hours
     };
   },
   computed: {
@@ -493,6 +520,9 @@ export default {
     globalData() {
       this.resetTimer();
     },
+    selectedTransactionVolumeTimeframe: function(val) {
+      this.updateTransactionVolumeChart();
+    },
   },
   mounted() {
     this.resetTimer();
@@ -522,51 +552,104 @@ export default {
       }, 1000);
     },
     updateTransactionVolumeChart() {
-      setInterval(() => {
-        let timestamps = this.globalData.txVolume;
+      
+      // set loading animation
+      this.loadingTransactionVolumeChart = true;
 
-        timestamps.sort();
+      // remove canvas element
+      let chart_canvas_el_rem = document.getElementById("Transaction-Volume-Chart");
+      if (chart_canvas_el_rem != null) {
+        chart_canvas_el_rem.parentNode.removeChild(chart_canvas_el_rem);
+      }
 
-        let min_ts = timestamps[0];
-        let max_tx = timestamps[timestamps.length - 1];
+      let min_height = 0;
+      let max_height = 0;
 
-        let data = [0, 0, 0, 0, 0, 0];
-        for (let i = 0; i < timestamps.length; i++) {
-          if (timestamps[i] === max_tx) {
-            data[data.length - 1]++;
-            continue;
-          }
-          let index = Math.floor(
-            (timestamps[i] - min_ts) / ((max_tx - min_ts) / data.length)
-          );
-          data[index]++;
+      service.getMaxBlockHeightTransactionVolume().then(res => {
+        // Get current block height 
+
+        let height = res.data['height']
+
+        let block_range = 0;
+
+        if (this.selectedTransactionVolumeTimeframe !== '-1') {
+          // selectedTransactionVolumeTimeframe is selected by hours,
+          // convert to seconds
+          // then convert to blocks
+
+          block_range = (parseInt(this.selectedTransactionVolumeTimeframe) * 3600) / 5;
+        } else {
+          // selected all time
+          block_range = height;
         }
 
+        min_height = height - block_range;
+        max_height = height;
+
+        return service.getTransactionVolume(min_height);
+      }).then(res => {
+        // Get transaction volume
+
+        // stop loading animation
+        this.loadingTransactionVolumeChart = false;
+
+        // add canvas element
+        let chart_canvas_el_add = document.createElement("CANVAS");
+        chart_canvas_el_add.setAttribute('id', "Transaction-Volume-Chart");
+
+        console.log("EL")
+        console.log(chart_canvas_el_add)
+
+        document.getElementById("Transaction-Volume-Body").appendChild(chart_canvas_el_add);
+
+        let timestamps = res.data;
+
+        let num_bars = 40;
+        
+        let data = [];
+        for (let i = 0; i < num_bars; i ++) {
+          data.push(0);
+        }
+
+        let labels = [];
+        for (let i = 0; i < num_bars; i ++) {
+          labels.push('');
+        }
+
+        let backgroundColor = [];
+        for (let i = 0; i < num_bars; i ++) {
+          backgroundColor.push('rgba(95, 44, 130, 0.2)');
+        }
+
+        let borderColor = [];
+        for (let i = 0; i < num_bars; i ++) {
+          backgroundColor.push('rgba(95, 44, 130, 1)');
+        }
+
+        for (let i = 0; i < timestamps.length; i++) {
+          let height = timestamps[i]['Block_height'];
+          let tx_count = timestamps[i]['Tx_count'];
+          if (height == max_height) {
+            continue;
+          }
+
+          let index = Math.floor(((height - min_height) / (max_height - min_height)) * data.length);
+
+          data[index] += tx_count;
+        }
+        
+        // Render transaction volume
         const ctx = document.getElementById('Transaction-Volume-Chart');
         const myChart = new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: ['24', '20', '16', '12', '8', '4'],
+            labels: labels,
             datasets: [
               {
                 label: '',
                 data: data,
-                backgroundColor: [
-                  'rgba(95, 44, 130, 0.2)',
-                  'rgba(95, 44, 130, 0.2)',
-                  'rgba(95, 44, 130, 0.2)',
-                  'rgba(95, 44, 130, 0.2)',
-                  'rgba(95, 44, 130, 0.2)',
-                  'rgba(95, 44, 130, 0.2)',
-                ],
-                borderColor: [
-                  'rgba(95, 44, 130, 1)',
-                  'rgba(95, 44, 130, 1)',
-                  'rgba(95, 44, 130, 1)',
-                  'rgba(95, 44, 130, 1)',
-                  'rgba(95, 44, 130, 1)',
-                  'rgba(95, 44, 130, 1)',
-                ],
+                backgroundColor: backgroundColor,
+                borderColor: borderColor,
                 borderWidth: 1,
               },
             ],
@@ -604,7 +687,10 @@ export default {
             },
           },
         });
-      }, 3000);
+
+      });
+
+      return;
     },
   },
 };

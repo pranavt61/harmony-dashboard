@@ -245,7 +245,11 @@
                       <div v-if="tx.validator.bech32 !== ''">
                         <router-link
                           v-if="tx.validator"
-                          :to="'/address/' + tx.validator.bech32 + '?txType=staking'"
+                          :to="
+                            '/address/' +
+                              tx.validator.bech32 +
+                              '?txType=staking'
+                          "
                         >
                           {{ tx.validator.bech32.substring(0, 20) }}...
                         </router-link>
@@ -258,7 +262,11 @@
                       <div v-if="tx.delegator.bech32 !== ''">
                         <router-link
                           v-if="tx.delegator"
-                          :to="'/address/' + tx.delegator.bech32 + '?txType=staking'"
+                          :to="
+                            '/address/' +
+                              tx.delegator.bech32 +
+                              '?txType=staking'
+                          "
                         >
                           {{ tx.delegator.bech32.substring(0, 20) }}...
                         </router-link>

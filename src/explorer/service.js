@@ -14,6 +14,7 @@ Promise.prototype.delay = function(time) {
 // const BACKEND_URL = `${'explorer.os.hmny.io'}:8888`;
 // const BACKEND_URL = `${window.location.hostname}:8888`;
 const BACKEND_URL = `${'explorer.harmony.one'}:8888`;
+const INSIGHT_BACKEND_URL = "http://54.187.20.215:8081"
 
 const HTTP_BACKEND_URL = `https://${BACKEND_URL}`;
 const SECRET = localStorage.getItem('secret');
@@ -90,10 +91,6 @@ listenBackendWebsocket();
       console.log('Connected!');
     }
   }, 5000);
-})();
-
-(function log() {
-  return axios.get('http://54.212.182.221:8081');
 })();
 
 (function listenCoinPrice() {
@@ -187,8 +184,7 @@ export default {
     return authGet('/tx', { params: { id } }).then(res => {
       let tx = res.data.tx;
 
-      if (tx.status !== "UNKNOWN") {
-        console.log(tx);
+      if (tx.status !== 'UNKNOWN') {
         return tx;
       }
 
@@ -203,7 +199,6 @@ export default {
         }
       }
       return null;
-
     });
   },
   getStakingTransaction(id) {
@@ -212,6 +207,15 @@ export default {
 
       return tx;
     });
+  },
+  getTransactionVolume(start_height) {
+    return axios.get(INSIGHT_BACKEND_URL +
+      "/block_transaction_count?min_block_height=" +
+      start_height);
+  },
+  getMaxBlockHeightTransactionVolume() {
+    return axios.get(INSIGHT_BACKEND_URL +
+      "/max_block_height_block_transaction_count")
   },
   getCoinStats() {
     return authGet('/coin-stats').then(res => {

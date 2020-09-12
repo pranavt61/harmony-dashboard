@@ -1,5 +1,18 @@
 <style scoped lang="less">
 @import '../less/common.less';
+
+.status-text-SUCCESS {
+  color: #4caf50 !important;
+}
+.status-text-PENDING {
+  color: #ff9800 !important;
+}
+.status-text-FAILURE {
+  color: #f44336 !important;
+}
+.status-text-UNKNOWN {
+  color: #607d8b !important;
+}
 </style>
 
 <template>
@@ -37,7 +50,9 @@
                   Status:
                 </td>
                 <td>
-                  {{ transaction.status | txStatus }}
+                  <div v-bind:class="'status-text-' + transaction.status">
+                    {{ transaction.status | txStatus }}
+                  </div>
                 </td>
               </tr>
               <tr v-if="isFailedTransaction">
@@ -56,7 +71,11 @@
                   </router-link>
                 </td>
               </tr>
-              <tr v-if="!isStaking && transaction.shardID === transaction.toShardID">
+              <tr
+                v-if="
+                  !isStaking && transaction.shardID === transaction.toShardID
+                "
+              >
                 <td class="td-title">
                   Shard:
                 </td>
@@ -102,11 +121,10 @@
                 </td>
                 <td>
                   <font-awesome-icon :icon="['far', 'clock']" />
-                  {{ Number(transaction.timestamp) * 1000 | age }}
+                  {{ (Number(transaction.timestamp) * 1000) | age }}
                   ({{ (Number(transaction.timestamp) * 1000) | timestamp }})
                 </td>
               </tr>
-              
               <tr v-if="!isStaking">
                 <td class="td-title">
                   From Address:
@@ -124,7 +142,6 @@
                   >
                     <font-awesome-icon :icon="['far', 'copy']" />
                   </button>
-
                 </td>
               </tr>
               <tr v-if="!isStaking">
@@ -194,7 +211,9 @@
                   -
                 </td>
                 <td v-else>
-                  {{ transaction.value | amount }} ONE (${{ getFiatValue(transaction.value / 10 ** 18) }})
+                  {{ transaction.value | amount }} ONE (${{
+                    getFiatValue(transaction.value / 10 ** 18)
+                  }})
                 </td>
               </tr>
               <tr>
@@ -202,16 +221,16 @@
                   Transaction Fee:
                 </td>
                 <td>
-                  {{ normalizedGas() }} ONE (${{ getFiatValue(Number(normalizedGas())) }})
+                  {{ normalizedGas() }} ONE (${{
+                    getFiatValue(Number(normalizedGas()))
+                  }})
                 </td>
               </tr>
               <tr>
                 <td class="td-title">
                   Gas Price:
                 </td>
-                <td>
-                  {{ transaction.gasPrice }} Atto
-                </td>
+                <td>{{ transaction.gasPrice }} Atto</td>
               </tr>
               <tr v-if="sequence">
                 <td class="td-title">
@@ -315,11 +334,11 @@ export default {
       if (this.transaction == null) {
         this.getTransaction();
       }
-    },500);
+    }, 500);
 
     setTimeout(() => {
       console.log(this.transaction);
-    },3000);
+    }, 3000);
   },
   methods: {
     getSequence() {
@@ -424,7 +443,7 @@ export default {
       );
     },
     getFiatValue(value) {
-      value = (value * parseFloat(this.globalData.coinPrice));
+      value = value * parseFloat(this.globalData.coinPrice);
 
       if (value < 0) {
         return value.toPrecision(2).toString();

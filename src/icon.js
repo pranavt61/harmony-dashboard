@@ -10,10 +10,7 @@ import {
   faSearch,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  faClock,
-  faCopy,
-} from '@fortawesome/free-regular-svg-icons'
+import { faClock, faCopy } from '@fortawesome/free-regular-svg-icons';
 
 library.add(
   FontAwesomeBrands,
@@ -24,7 +21,7 @@ library.add(
   faSearch,
   faUserFriends,
   faClock,
-  faCopy,
+  faCopy
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
