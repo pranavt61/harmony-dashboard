@@ -60,6 +60,15 @@
     }
   }
 }
+
+.pending-tx-table-empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.pending-tx-table-empty-message {
+}
 </style>
 
 <template>
@@ -347,33 +356,43 @@
                 </div>
               </header>
               <div class="explorer-card-body">
-                <div class="explorer-table-responsive latest-tx-table">
-                  <div class="tr">
-                    <div class="th">
-                      Shard
+                <div
+                  v-if="emptyPendingTransactions"
+                  class="pending-tx-table-empty-container"
+                >
+                  <h3 class="pending-tx-table-empty-message">
+                    No Pending Transactions
+                  </h3>
+                </div>
+                <div v-else>
+                  <div class="explorer-table-responsive latest-tx-table">
+                    <div class="tr">
+                      <div class="th">
+                        Shard
+                      </div>
+                      <div class="th">
+                        Hash
+                      </div>
+                      <div class="th text-right">
+                        Value
+                      </div>
                     </div>
-                    <div class="th">
-                      Hash
-                    </div>
-                    <div class="th text-right">
-                      Value
-                    </div>
-                  </div>
-                  <div
-                    v-for="tx in filterPendingTransactionsByShards"
-                    :key="tx.hash"
-                    class="tr"
-                  >
-                    <div class="td">
-                      {{ tx.shard }}
-                    </div>
-                    <div class="td">
-                      <router-link :to="'/tx/' + tx.hash">
-                        {{ tx.hash.substring(0, 32) }}...
-                      </router-link>
-                    </div>
-                    <div class="td text-right">
-                      {{ tx.value | amount }}
+                    <div
+                      v-for="tx in filterPendingTransactionsByShards"
+                      :key="tx.hash"
+                      class="tr"
+                    >
+                      <div class="td">
+                        {{ tx.shard }}
+                      </div>
+                      <div class="td">
+                        <router-link :to="'/tx/' + tx.hash">
+                          {{ tx.hash.substring(0, 32) }}...
+                        </router-link>
+                      </div>
+                      <div class="td text-right">
+                        {{ tx.value | amount }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -515,6 +534,22 @@ export default {
 
       return pendingTxs[selectedShard];
     },
+    emptyPendingTransactions() {
+      const selectedShard = this.selectedPendingTransactionsShard;
+      const pendingTxs = this.globalData.pendingTxs;
+
+      if (selectedShard == '-1') {
+        for (let shard in pendingTxs) {
+          if (Object.prototype.hasOwnProperty.call(pendingTxs, shard)) {
+            if (pendingTxs[shard].length > 0) return false;
+          }
+        }
+
+        return true;
+      }
+
+      return (pendingTxs[selectedShard].length === 0);
+    }
   },
   watch: {
     globalData() {
@@ -630,8 +665,8 @@ export default {
               // hour labels
               let h = dateAgo.getHours();
               let m = '00';
+              let AMPM = (h >= 12)? " PM":" AM";
 
-              var AMPM = (h >= 12)? " PM":" AM";
               if (h > 12) h = h - 12;
               if (h < 1) h = h + 12;
 

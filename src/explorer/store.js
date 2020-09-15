@@ -37,7 +37,6 @@ let store = {
     lastUpdateTime: 0,
     validators: [],
     pendingTxs: {},
-    txVolume: [],
   },
 
   update(data) {
@@ -145,9 +144,6 @@ let store = {
     pendingTxs[shardID] = txs;
 
     this.data.pendingTxs = pendingTxs;
-  },
-  updateTransactionVolume(volume) {
-    this.data.txVolume = [...volume];
   },
   reset() {
     this.data.blocks = [];
