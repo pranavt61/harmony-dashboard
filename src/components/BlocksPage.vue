@@ -6,6 +6,7 @@
   <div class="blocks-page explorer-page page">
     <div class="blocks-body explorer-body">
       <div class="container">
+        <div class="header-spacing" />
         <div class="explorer-card">
           <header>
             <h1 class="flex-grow">

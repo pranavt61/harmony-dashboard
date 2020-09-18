@@ -1,14 +1,54 @@
 <style scoped lang="less">
 @import '../less/common.less';
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltiptext-active {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
 </style>
 
 <template>
   <div class="block-page explorer-page page">
     <div class="block-body explorer-body">
       <div v-if="!loading && block" class="container">
+        <div class="header-spacing" />
         <div class="explorer-card">
           <header class="block-height-header">
             <h1>Block {{ block.height | number }}</h1>
+            <div style="padding:10px;" />
             <router-link
               class="btn btn-light btn-icon-only"
               :to="'/block/' + block.prevBlock.id"
@@ -36,10 +76,12 @@
                   <td>
                     {{ block.id }}
                     <button
-                      class="btn btn-light btn-icon-only"
-                      v-on:click="eventClipBoardButton(block.id)"
+                      class="btn btn-light btn-icon-only tooltip"
+                      v-on:click="eventClipBoardButton(block.id, 'toolTipBlock')"
                     >
                       <font-awesome-icon :icon="['far', 'copy']" />
+
+                      <span id="toolTipBlock" class="tooltiptext">Copied!</span>
                     </button>
                   </td>
                 </tr>
@@ -62,10 +104,12 @@
                       {{ block.prevBlock.id }}
                     </router-link>
                     <button
-                      class="btn btn-light btn-icon-only"
-                      v-on:click="eventClipBoardButton(block.prevBlock.id)"
+                      class="btn btn-light btn-icon-only tooltip"
+                      v-on:click="eventClipBoardButton(block.prevBlock.id, 'toolTipPrevBlock')"
                     >
                       <font-awesome-icon :icon="['far', 'copy']" />
+
+                      <span id="toolTipPrevBlock" class="tooltiptext">Copied!</span>
                     </button>
                   </td>
                   <td v-else>
@@ -81,10 +125,12 @@
                       {{ block.nextBlock.id }}
                     </router-link>
                     <button
-                      class="btn btn-light btn-icon-only"
-                      v-on:click="eventClipBoardButton(block.nextBlock.id)"
+                      class="btn btn-light btn-icon-only tooltip"
+                      v-on:click="eventClipBoardButton(block.nextBlock.id, 'toolTipNextBlock')"
                     >
                       <font-awesome-icon :icon="['far', 'copy']" />
+
+                      <span id="toolTipNextBlock" class="tooltiptext">Copied!</span>
                     </button>
                   </td>
                   <td v-else>
@@ -158,10 +204,12 @@
                       {{ block.miner }}
                     </router-link>
                     <button
-                      class="btn btn-light btn-icon-only"
-                      v-on:click="eventClipBoardButton(block.miner)"
+                      class="btn btn-light btn-icon-only tooltip"
+                      v-on:click="eventClipBoardButton(block.miner, 'toolTipMiner')"
                     >
                       <font-awesome-icon :icon="['far', 'copy']" />
+
+                      <span id="toolTipMiner" class="tooltiptext">Copied!</span>
                     </button>
                   </td>
                 </tr>
@@ -229,12 +277,12 @@
                     <th>Value</th>
                     <th class="text-right">Fee</th>
                   </tr>
-                  <tr v-for="tx in block.stakingTxs" :key="tx.hash">
+                  <tr v-for="tx in block.stakingTxs" :key="tx.id">
                     <td>
                       {{ tx.shardID }}
                     </td>
                     <td>
-                      <router-link :to="'/staking-tx/' + tx.hash">
+                      <router-link :to="'/staking-tx/' + tx.id">
                         {{ tx.id.substring(0, 20) }}...
                       </router-link>
                     </td>
@@ -308,11 +356,15 @@ export default {
     return {
       loading: true,
       block: null,
+      validator: null
     };
   },
   watch: {
     $route() {
       this.getBlock();
+    },
+    block() {
+      this.getValidator()
     },
   },
   mounted() {
@@ -326,6 +378,13 @@ export default {
         .then(block => (this.block = block))
         .finally(() => (this.loading = false));
     },
+    getValidator() {
+      const address = this.block["miner"]
+
+      service
+        .getValidatorByAddress(address)
+        .then(validator => {this.validator = validator; console.log(validator)})
+    },
     getGasUsedPercent() {
       if (this.block == undefined) {
         return 0;
@@ -336,13 +395,22 @@ export default {
 
       return (gas_used / gas_limit) * 100;
     },
-    eventClipBoardButton(newClip) {
+    eventClipBoardButton(newClip, tooltipID) {
       const el = document.createElement('textarea');
       el.value = newClip;
       document.body.appendChild(el);
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
+
+      // activate tool tip
+      const tooltip = document.getElementById(tooltipID);
+      tooltip.classList.add('tooltiptext-active');
+
+      // deactivate tool tip
+      setTimeout(() => {
+        tooltip.classList.remove('tooltiptext-active');
+      }, 1000);
     },
   },
 };

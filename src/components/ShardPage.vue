@@ -14,6 +14,7 @@
   <div class="shard-page explorer-page page">
     <div class="shard-body explorer-body">
       <div v-if="shard" class="container">
+        <div class="header-spacing" />
         <h1 class="page-title">Shard {{ $route.params.id }}</h1>
         <div class="explorer-card status-card">
           <div class="row">

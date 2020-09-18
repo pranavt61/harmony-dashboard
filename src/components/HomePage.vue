@@ -13,6 +13,7 @@
   background-position: bottom center;
   color: var(--primary-text-color);
   display: flex;
+  overflow-x: hidden;
   header {
     .flex-horizontal;
     align-items: flex-end;
@@ -67,83 +68,53 @@
   align-items: center;
   width: 100%;
 }
-.pending-tx-table-empty-message {
+
+.search-bar-body {
+  padding: 30px 40px 50px 60px;
+  text-align: center;
+  margin: 0 -601.5rem;
+  background: linear-gradient(0deg, white 50%, #5f2c82 50%);
 }
+
+
+.search-bar-input {
+  width: 800px;
+  height: 40px;
+
+  font-size: 15px;
+
+  padding: 30px 30px !important;
+  border: 0px !important;
+  border-radius: 5px !important;
+  box-shadow: 0 0 0.4em rgba(0, 0, 0, 0.5);
+	outline: none;
+
+}
+input:focus {
+  outline:none !important;
+}
+
 </style>
 
 <template>
   <div class="home-page explorer-page page">
+    
     <div class="home-body explorer-body">
       <div v-if="globalData.blocks.length" class="container">
+        <div class="search-bar-body">
+          <input
+            type="text"
+            placeholder="Search for Blocks / Transactions / Accounts..."
+            class="search-bar-input"
+            v-model="textSearchBar"
+            @keyup.enter="searchQuery()"
+          />
+        </div>
         <div v-if="!!coinStats" class="explorer-card status-card">
           <CoinStats :stats="coinStats" />
         </div>
-        <div class="explorer-card status-card">
-          <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <div class="flex-horizontal">
-                <div class="icon-column">
-                  <div class="data-icon-circle">
-                    <div class="data-icon icon-block-count" />
-                  </div>
-                </div>
-                <div class="data-num-column">
-                  <div class="data-num">
-                    {{ globalData.blockCount | number }}
-                  </div>
-                  <h1>Block Count</h1>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <div class="flex-horizontal">
-                <div class="icon-column">
-                  <div class="data-icon-circle">
-                    <div class="data-icon icon-tx-count" />
-                  </div>
-                </div>
-                <div class="data-num-column">
-                  <div class="data-num">
-                    {{ globalData.blockLatency | blockLatency }}
-                  </div>
-                  <h1>Block Latency</h1>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <div class="flex-horizontal">
-                <div class="icon-column">
-                  <div class="data-icon-circle">
-                    <div class="data-icon icon-market-cap" />
-                  </div>
-                </div>
-                <div class="data-num-column">
-                  <div class="data-num">
-                    {{ globalData.marketCap | number }}
-                  </div>
-                  <h1>Market Cap</h1>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <div class="flex-horizontal">
-                <div class="icon-column">
-                  <div class="data-icon-circle">
-                    <div class="data-icon icon-coin-price" />
-                  </div>
-                </div>
-                <div class="data-num-column">
-                  <div class="data-num">
-                    {{ Math.round(globalData.coinPrice * 10000) / 10000 }}
-                  </div>
-                  <h1>Coin Price</h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="row">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
@@ -217,52 +188,7 @@
               </footer>
             </div>
           </div>
-          <div v-if="!showStaking" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            <div class="explorer-card latest-block-card">
-              <header class="header-no-dropdown">
-                <h1 class="flex-grow">
-                  Validators
-                </h1>
-              </header>
-              <div class="explorer-card-body">
-                <div class="explorer-table-responsive latest-tx-table">
-                  <div class="tr">
-                    <div class="th">
-                      Name
-                    </div>
-                    <div class="th">
-                      Fee Rate
-                    </div>
-                    <div class="th text-right">
-                      Total Stake
-                    </div>
-                  </div>
-                  <div
-                    v-for="v in globalData.validators"
-                    :key="v.name"
-                    class="tr"
-                  >
-                    <div class="td">
-                      <a :href="v.website" target="_blank">
-                        {{ v.name }}
-                      </a>
-                    </div>
-                    <div class="td">
-                      {{
-                        Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%'
-                      }}
-                    </div>
-                    <div class="td text-right">
-                      {{ Math.round(v.total_delegation) | number }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
@@ -334,7 +260,52 @@
               </footer>
             </div>
           </div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        </div>
+        <div class="row">
+          <div v-if="!showStaking" class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="explorer-card latest-block-card">
+              <header class="header-no-dropdown">
+                <h1 class="flex-grow">
+                  Top Validators
+                </h1>
+              </header>
+              <div class="explorer-card-body">
+                <div class="explorer-table-responsive latest-tx-table">
+                  <div class="tr">
+                    <div class="th">
+                      Name
+                    </div>
+                    <div class="th">
+                      Fee Rate
+                    </div>
+                    <div class="th text-right">
+                      Total Stake
+                    </div>
+                  </div>
+                  <div
+                    v-for="v in globalData.validators"
+                    :key="v.name"
+                    class="tr"
+                  >
+                    <div class="td">
+                      <a :href="v.website" target="_blank">
+                        {{ v.name }}
+                      </a>
+                    </div>
+                    <div class="td">
+                      {{
+                        Math.round(parseFloat(v.fee_rate) * 10000) / 100 + '%'
+                      }}
+                    </div>
+                    <div class="td text-right">
+                      {{ Math.round(v.total_delegation) | number }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="explorer-card latest-block-card">
               <header>
                 <h1 class="flex-grow">
@@ -400,57 +371,6 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="explorer-card latest-block-card">
-              <header>
-                <h1 class="flex-grow">
-                  Transaction Volume
-                </h1>
-                <div class="secondary-info">
-                  <select v-model="selectedTransactionVolumeTimeframe">
-                    <option value="24">
-                      24 hours
-                    </option>
-                    <option value="168">
-                      7 days
-                    </option>
-                    <option value="720">
-                      1 month
-                    </option>
-                    <option value="8760">
-                      1 year
-                    </option>
-                    <option value="-1">
-                      All time
-                    </option>
-                  </select>
-                </div>
-              </header>
-              <div class="explorer-card-body">
-                <div id="Transaction-Volume-Body"></div>
-                <div v-if="loadingTransactionVolumeChart">
-                  <loading-message />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <iframe
-              src="https://docs.google.com/forms/d/e/1FAIpQLSfpQ1qJjBNwonJU0Ls0GX9NR7nd0zwWQMTYPX--mQW8earWSA/viewform?embedded=true"
-              width="100%"
-              height="1000"
-              frameborder="0"
-              marginheight="0"
-              marginwidth="0"
-              class="flex-grow"
-            >
-              Loading…
-            </iframe>
-          </div>
-        </div>
       </div>
       <div v-else class="container">
         <loading-message />
@@ -483,12 +403,14 @@ export default {
       showTx: true,
       coinStats: null,
 
+      textSearchBar: '',
+
       loadingTransactionVolumeChart: true,
 
       selectedBlocksShard: '-1',
       selectedTransactionsShard: '-1',
       selectedPendingTransactionsShard: '-1',
-      selectedTransactionVolumeTimeframe: '24', // hours
+      selectedTransactionVolumeTimeframe: '48', // hours
     };
   },
   computed: {
@@ -555,14 +477,12 @@ export default {
     globalData() {
       this.resetTimer();
     },
-    selectedTransactionVolumeTimeframe: function(val) {
-      this.updateTransactionVolumeChart();
-    },
   },
   mounted() {
     this.resetTimer();
 
-    this.updateTransactionVolumeChart();
+    this.updateCoinStats();
+    setInterval(this.updateCoinStats, 10000);
 
     // Update Validator data
     // Update Pending Transaction data
@@ -570,7 +490,7 @@ export default {
     setInterval(() => {
       NodeWebsocket.GetValidators();
       NodeWebsocket.GetPendingTransactions();
-    }, 10000);
+    }, 30000);
   },
   methods: {
     changeTab(value) {
@@ -586,184 +506,33 @@ export default {
         this.now = Date.now();
       }, 1000);
     },
-    updateTransactionVolumeChart() {
-      
-      // set loading animation
-      this.loadingTransactionVolumeChart = true;
+    searchQuery() {
+      let input = this.textSearchBar.trim();
+      this.textSearchBar = '';
 
-      // remove canvas element
-      let chart_canvas_el_rem = document.getElementById("Transaction-Volume-Chart");
-      if (chart_canvas_el_rem != null) {
-        chart_canvas_el_rem.parentNode.removeChild(chart_canvas_el_rem);
-      }
-
-      let min_height = 0;
-      let max_height = 0;
-
-      service.getMaxBlockHeightTransactionVolume().then(res => {
-        // Get current block height 
-
-        let height = res.data['height']
-
-        let block_range = 0;
-
-        if (this.selectedTransactionVolumeTimeframe !== '-1') {
-          // selectedTransactionVolumeTimeframe is selected by hours,
-          // convert to seconds
-          // then convert to blocks
-
-          block_range = (parseInt(this.selectedTransactionVolumeTimeframe) * 3600) / 5;
-        } else {
-          // selected all time
-          block_range = height;
-        }
-
-        min_height = height - block_range;
-        max_height = height;
-
-        return service.getTransactionVolume(min_height);
-      }).then(res => {
-        // Get transaction volume
-
-        // stop loading animation
-        this.loadingTransactionVolumeChart = false;
-
-        // add canvas element
-        let chart_canvas_el_add = document.createElement("CANVAS");
-        chart_canvas_el_add.setAttribute('id', "Transaction-Volume-Chart");
-        document.getElementById("Transaction-Volume-Body").appendChild(chart_canvas_el_add);
-
-        let timestamps = res.data;
-
-        let num_bars = 40;
-        
-        let data = [];
-        for (let i = 0; i < num_bars; i ++) {
-          data.push(0);
-        }
-
-        let labels = [];
-        let num_labels = 5;
-        for (let i = 0; i < num_bars; i ++) {
-          if (i % Math.floor(num_bars / num_labels) == 0) {
-            let time_selected = parseInt(this.selectedTransactionVolumeTimeframe);
-            if (time_selected == -1) {
-              // Selected all time
-              // HARDCODED
-              // Timestamp of first block in shard 0 is        1561736306
-              time_selected = (Math.floor(Date.now() / 1000) - 1561736306);
-
-              // convert seconds to hours
-              time_selected = Math.floor(time_selected / 3600);
-            }
-
-            let ts = Math.round(new Date().getTime() / 1000);
-            let hoursAgo = time_selected - Math.floor((i * time_selected) / num_bars); 
-            let dateAgo = new Date((ts - (hoursAgo * 3600)) * 1000);
-            
-            if (time_selected == 24) {
-              // hour labels
-              let h = dateAgo.getHours();
-              let m = '00';
-              let AMPM = (h >= 12)? " PM":" AM";
-
-              if (h > 12) h = h - 12;
-              if (h < 1) h = h + 12;
-
-              labels.push(h + ':' + m + AMPM);
-            } else {
-              // date labels
-              let m = dateAgo.getMonth();
-              let d = dateAgo.getDate();
-
-              // only show year when selected All Time
-              let y = (this.selectedTransactionVolumeTimeframe == '-1') ?
-                (' ' + dateAgo.getFullYear()) : '';
-
-              m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
-
-              labels.push(m + " '" + d + y);
-            }
+      service
+        .search(input)
+        .then(result => {
+          if (result.type === 'block') {
+            this.$router.push(`/block/${input}`);
+          } else if (result.type === 'tx') {
+            this.$router.push(`/tx/${input}`);
+          } else if (result.type === 'address') {
+            this.$router.push(`/address/${input}`);
           } else {
-            labels.push('');
+            alert('invalid search query');
           }
-        }
-
-        let backgroundColor = [];
-        for (let i = 0; i < num_bars; i ++) {
-          backgroundColor.push('rgba(95, 44, 130, 0.2)');
-        }
-
-        let borderColor = [];
-        for (let i = 0; i < num_bars; i ++) {
-          backgroundColor.push('rgba(95, 44, 130, 1)');
-        }
-
-        for (let i = 0; i < timestamps.length; i++) {
-          let height = timestamps[i]['Block_height'];
-          let tx_count = timestamps[i]['Tx_count'];
-          if (height == max_height) {
-            continue;
-          }
-
-          let index = Math.floor(((height - min_height) / (max_height - min_height)) * data.length);
-
-          data[index] += tx_count;
-        }
-        
-        // Render transaction volume
-        const ctx = document.getElementById('Transaction-Volume-Chart');
-        const myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: '',
-                data: data,
-                backgroundColor: backgroundColor,
-                borderColor: borderColor,
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: {
-            animation: {
-              duration: 0,
-            },
-            legend: {
-              display: false,
-            },
-            scales: {
-              xAxes: [
-                {
-                  scaleLabel: {
-                    display: false
-                  },
-                  ticks: {
-                    maxRotation: 0,
-                    minRotation: 0
-                  },
-                },
-              ],
-              yAxes: [
-                {
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'Frequency',
-                  },
-                  ticks: {
-                    beginAtZero: true,
-                  },
-                },
-              ],
-            },
-          },
+        })
+        .catch(r => {
+          alert('invalid search query')
         });
+    },
+    updateCoinStats() {
+      service.getCoinStats()
+        .then(result => {
 
-      });
-
-      return;
+          this.coinStats = result['coin'];
+        });
     },
   },
 };

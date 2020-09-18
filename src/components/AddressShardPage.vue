@@ -6,6 +6,7 @@
   <div class="address-page explorer-page page">
     <div class="address-body explorer-body">
       <div v-if="showPanel" class="container">
+        <div class="header-spacing" />
         <div class="explorer-card">
           <header>
             <h1>Address</h1>

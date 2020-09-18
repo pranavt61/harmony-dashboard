@@ -4,14 +4,14 @@
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10;
   top: 0;
   color: var(--color-site-header-text);
   transition: background-color @anim-duration @anim-easing,
     color @anim-duration @anim-easing;
   a.navbar-brand {
     display: inline-block;
-    height: 7em;
+    height: 4em;
     width: 10em;
     box-sizing: border-box;
     background-image: url(../assets/harmony-logo-white.svg);
@@ -32,81 +32,44 @@
     display: flex;
     align-items: center;
   }
+
   a.navbar-nav {
     text-decoration: none;
+    color: white;
+    border-radius: 5px;
     padding: @space-md @space-md;
-    transition: color @anim-duration @anim-easing;
-    color: #a09ea7;
+    box-shadow: 0 0px 0px rgba(0,0,0,0.15);
+    transition: box-shadow 0.3s ease-in-out;
     &:hover {
-      color: inherit;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
   }
+
   .tagline {
-    font-weight: 200;
+    font-weight: 300;
     margin-bottom: -0.2em;
   }
-  .search {
-    width: 16em;
-    margin-left: @space-md;
-    flex: none;
-    height: 2em;
-    overflow: hidden;
-    position: relative;
-    color: #fff;
-    border: 1px solid #fff;
-    border-radius: 2em;
-    .search-icon {
-      position: absolute;
-      top: 50%;
-      left: @space-sm;
-      transform: translateY(-50%);
-    }
-    input[type='text'] {
-      border-radius: 2em;
-      padding: @space-sm @space-md;
-      padding-left: 3em;
-      border: 0;
-      width: 100%;
-      height: 100%;
-      background-color: transparent;
-      &::placeholder {
-        color: #fff;
-      }
-      &:focus {
-        outline: none;
-        box-shadow: none;
-      }
-    }
-  }
 }
 
-@media (max-width: 768px) {
-  .search {
-    width: 10em !important;
-  }
-
-  .tagline {
-    display: none;
-  }
+.search-bar-body {
+  padding: 30px 40px 50px 60px;
+  text-align: center;
+  margin: 0 -601.5rem;
+  background: linear-gradient(0deg, white 50%, #5f2c82 50%);
 }
 
-.notificationsContainer {
-  position: absolute;
-  margin: 7px 0px 0px 30px;
 
-  > div {
-    position: relative;
-  }
+.search-bar-input {
+  width: 800px;
+  height: 40px;
 
-  .searchError {
-    background: rgba(208, 33, 45, 0.85);
-    margin-bottom: 5px;
-    border-radius: 5px;
-    font-size: 14px;
+  font-size: 15px;
 
-    padding: 10px 15px;
-    max-width: 250px;
-  }
+  padding: 30px 30px !important;
+  border: 0px !important;
+  border-radius: 5px !important;
+  box-shadow: 0 0 0.4em rgba(0, 0, 0, 0.5);
+	outline: none;
 }
 </style>
 <template>
@@ -115,38 +78,15 @@
       <div class="navbar-header">
         <div class="site-brand flex-horizontal">
           <router-link class="navbar-brand" to="/" />
-          <span class="tagline">Open Consensus for 10B</span>
+          <span class="tagline">Blockchain Explorer</span>
         </div>
         <div class="navbar-actions">
-          <router-link v-if="showNav" class="navbar-nav" to="/dashboard">
-            Dashboard
+          <router-link class="navbar-nav" to="/blocks">
+            Blocks
           </router-link>
-          <router-link v-if="showNav" class="navbar-nav" to="/blocks">
-            Explorer
+          <router-link class="navbar-nav" to="/txs">
+            Transactions
           </router-link>
-          <div>
-            <div class="search">
-              <font-awesome-icon class="search-icon" icon="search" />
-              <input
-                v-model="input"
-                type="text"
-                placeholder="Block Hash / Tx Hash / Account..."
-                @keyup.enter="search"
-              />
-            </div>
-            <div class="notificationsContainer">
-              <notifications group="search">
-                <template slot="body" slot-scope="props">
-                  <div class="searchError">
-                    <a class="close" @click="props.close">
-                      <i class="fa fa-fw fa-close" />
-                    </a>
-                    <div v-html="props.item.text" />
-                  </div>
-                </template>
-              </notifications>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -159,8 +99,7 @@ export default {
   name: 'SiteHeader',
   data() {
     return {
-      input: '',
-      showNav: localStorage.getItem('nav'),
+      input: ''
     };
   },
   methods: {

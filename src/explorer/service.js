@@ -180,6 +180,11 @@ export default {
       "/block_transaction_count?min_block_height=" +
       start_height);
   },
+  getValidatorByAddress(address) {
+    return axios.get(INSIGHT_BACKEND_URL +
+      "/validator_by_address?address=" +
+      address);
+  },
   getMaxBlockHeightTransactionVolume() {
     return axios.get(INSIGHT_BACKEND_URL +
       "/max_block_height_block_transaction_count")

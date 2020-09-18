@@ -1,6 +1,44 @@
 <style scoped lang="less">
 @import '../less/common.less';
 
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltiptext-active {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 .status-text-SUCCESS {
   color: #4caf50 !important;
 }
@@ -17,6 +55,7 @@
 
 <template>
   <div class="transaction-page explorer-page page">
+    <div class="header-spacing" />
     <div class="transaction-body explorer-body">
       <div v-if="!firstLoading || (!loading && transaction)" class="container">
         <div class="explorer-card">
@@ -38,10 +77,11 @@
                 <td>
                   {{ transaction.hash || $route.params.transactionId }}
                   <button
-                    class="btn btn-light btn-icon-only"
-                    v-on:click="eventClipBoardButton(transaction.hash)"
+                    class="btn btn-light btn-icon-only tooltip"
+                    v-on:click="eventClipBoardButton(transaction.hash, 'toolTipTX')"
                   >
                     <font-awesome-icon :icon="['far', 'copy']" />
+                    <span id="toolTipTX" class="tooltiptext">Copied!</span>
                   </button>
                 </td>
               </tr>
@@ -137,10 +177,11 @@
                     {{ transaction.from }}
                   </router-link>
                   <button
-                    class="btn btn-light btn-icon-only"
-                    v-on:click="eventClipBoardButton(transaction.from)"
+                    class="btn btn-light btn-icon-only tooltip"
+                    v-on:click="eventClipBoardButton(transaction.from, 'toolTipFrom')"
                   >
                     <font-awesome-icon :icon="['far', 'copy']" />
+                    <span id="toolTipFrom" class="tooltiptext">Copied!</span>
                   </button>
                 </td>
               </tr>
@@ -156,31 +197,34 @@
                     {{ transaction.to }}
                   </router-link>
                   <button
-                    class="btn btn-light btn-icon-only"
-                    v-on:click="eventClipBoardButton(transaction.to)"
+                    class="btn btn-light btn-icon-only tooltip"
+                    v-on:click="eventClipBoardButton(transaction.to, 'toolTipTo')"
                   >
                     <font-awesome-icon :icon="['far', 'copy']" />
+                    <span id="toolTipTo" class="tooltiptext">Copied!</span>
                   </button>
                 </td>
               </tr>
               <tr v-if="isStaking">
                 <td class="td-title">Validator Address:</td>
                 <td class="address_link">
-                  <router-link
-                    v-if="transaction.validator"
-                    :to="
-                      '/address/' + transaction.validator + '?txType=staking'
-                    "
-                  >
-                    {{ transaction.validator }}
-                  </router-link>
+                  <div v-if="transaction.validator">
+                    <router-link
+                      :to="
+                        '/address/' + transaction.validator + '?txType=staking'
+                      "
+                    >
+                      {{ transaction.validator }}
+                    </router-link>
+                    <button
+                      class="btn btn-light btn-icon-only tooltip"
+                      v-on:click="eventClipBoardButton(transaction.validator, 'toolTipValidator')"
+                    >
+                      <font-awesome-icon :icon="['far', 'copy']" />
+                      <span id="toolTipValidator" class="tooltiptext">Copied!</span>
+                    </button>
+                  </div>
                   <span v-else>-</span>
-                  <button
-                    class="btn btn-light btn-icon-only"
-                    v-on:click="eventClipBoardButton(transaction.validator)"
-                  >
-                    <font-awesome-icon :icon="['far', 'copy']" />
-                  </button>
                 </td>
               </tr>
               <tr v-if="isStaking">
@@ -196,10 +240,11 @@
                   </router-link>
                   <span v-else>-</span>
                   <button
-                    class="btn btn-light btn-icon-only"
-                    v-on:click="eventClipBoardButton(transaction.delegator)"
+                    class="btn btn-light btn-icon-only tooltip"
+                    v-on:click="eventClipBoardButton(transaction.delegator, 'toolTipDelegator')"
                   >
                     <font-awesome-icon :icon="['far', 'copy']" />
+                    <span id="toolTipDelegator" class="tooltiptext">Copied!</span>
                   </button>
                 </td>
               </tr>
@@ -451,13 +496,22 @@ export default {
 
       return value.toString();
     },
-    eventClipBoardButton(newClip) {
+    eventClipBoardButton(newClip, tooltipID) {
       const el = document.createElement('textarea');
       el.value = newClip;
       document.body.appendChild(el);
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
+
+      // activate tool tip
+      const tooltip = document.getElementById(tooltipID);
+      tooltip.classList.add('tooltiptext-active');
+
+      // deactivate tool tip
+      setTimeout(() => {
+        tooltip.classList.remove('tooltiptext-active');
+      }, 1000);
     },
   },
 };

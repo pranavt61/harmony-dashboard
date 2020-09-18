@@ -70,6 +70,10 @@
   --color-text-error: @color-error;
 }
 
+body {
+    font-family: Nunito;
+}
+
 .text-right {
   text-align: right !important;
 }
@@ -150,7 +154,7 @@
 }
 
 .card {
-  border-radius: @border-radius;
+  border-radius: 25px;
   background-color: #fff;
   padding: @space-md;
 }
@@ -256,7 +260,7 @@ a {
   border: solid 1px transparent;
   outline: 0;
   cursor: pointer;
-  transition: background-color @anim-duration @anim-easing;
+  transition: box-shadow 0.3s ease-in-out;
   padding: @space-sm @space-md;
 
   &.disabled,
@@ -270,11 +274,12 @@ a {
     width: 2em;
     height: 2em;
     padding: 0;
+    border-radius: 5px;
   }
 
   &.btn-light {
     &:hover {
-      background-color: rgba(0, 0, 0, 0.08);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     &.btn-danger {
@@ -340,7 +345,7 @@ a {
 }
 
 .hmy-bg {
-  background: linear-gradient(to right top, #5f2c82, #49a09d);
+  background: #5f2c82;
 }
 
 :global {
@@ -376,4 +381,8 @@ td.address_link {
   a {
     font-family: Courier;
   }
+}
+
+div.header-spacing {
+  padding: 30px;
 }

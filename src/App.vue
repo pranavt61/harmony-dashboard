@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background-color: #dfdfdf;
+  background-color: white;
 }
 
 html,
@@ -66,10 +66,10 @@ body,
 .explorer-page {
   display: flex;
   flex-direction: column;
-  background-color: #f7f7ff;
+  background-color: white;
   .explorer-body {
     flex: 1;
-    padding-top: 8em;
+    padding: 50px 0px;
     width: 100%;
     color: var(--primary-text-color);
     display: flex;
@@ -77,6 +77,10 @@ body,
 
   .explorer-card {
     .card();
+
+    border: 1px solid #e7eaf3;
+    border-radius: .5rem;
+
     background-color: var(--color-card-background);
     color: var(--color-table-text);
     padding: 0;
@@ -224,6 +228,9 @@ body,
       background-size: 60% 60%;
       background-repeat: no-repeat;
       background-position: center;
+      &.icon-harmony-logo {
+        background-image: url(assets/harmony-one-logo.svg);
+      }
       &.icon-block-count {
         background-image: url(assets/block-count.svg);
       }

@@ -6,6 +6,7 @@
   <div class="txs-page explorer-page page">
     <div class="txs-body explorer-body">
       <div class="container">
+        <div class="header-spacing" />
         <div class="explorer-card">
           <header style="align-items: center;">
             <h1 class="flex-grow">

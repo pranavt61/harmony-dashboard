@@ -3,7 +3,7 @@
 </style>
 
 <template>
-  <div class="transactions-table explorer-card">
+  <div class="header-spacing transactions-table explorer-card">
     <header>
       <slot></slot>
       <div class="pagination-controls">
