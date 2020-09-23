@@ -478,6 +478,10 @@ export default {
     },
   },
   mounted() {
+
+    console.log('router');
+    console.log(this.$route);
+
     this.resetTimer();
 
     this.updateCoinStats();

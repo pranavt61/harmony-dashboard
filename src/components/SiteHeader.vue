@@ -51,21 +51,13 @@
   }
 }
 
-.search-bar-body {
-  padding: 30px 40px 50px 60px;
-  text-align: center;
-  margin: 0 -601.5rem;
-  background: linear-gradient(0deg, white 50%, #5f2c82 50%);
-}
-
-
 .search-bar-input {
-  width: 800px;
-  height: 40px;
+  width: 400px;
+  height: 1px;
 
-  font-size: 15px;
+  font-size: 10px;
 
-  padding: 30px 30px !important;
+  padding: 20px 20px !important;
   border: 0px !important;
   border-radius: 5px !important;
   box-shadow: 0 0 0.4em rgba(0, 0, 0, 0.5);
@@ -81,11 +73,26 @@
           <span class="tagline">Blockchain Explorer</span>
         </div>
         <div class="navbar-actions">
+          <div v-if="$route.name !== 'HomePage'" class="search-bar-body">
+            <input
+              type="text"
+              placeholder="Search for Blocks / Transactions / Accounts..."
+              class="search-bar-input"
+              v-model="textSearchBar"
+              @keyup.enter="searchQuery()"
+            />
+          </div>
           <router-link class="navbar-nav" to="/blocks">
             Blocks
           </router-link>
           <router-link class="navbar-nav" to="/txs">
             Transactions
+          </router-link>
+          <router-link class="navbar-nav" to="/staking-txs">
+            Staking
+          </router-link>
+          <router-link class="navbar-nav" to="/stats">
+            Stats
           </router-link>
         </div>
       </div>
@@ -99,18 +106,17 @@ export default {
   name: 'SiteHeader',
   data() {
     return {
-      input: ''
+      textSearchBar: ''
     };
   },
+  mounted() {
+    console.log(this.$route);
+  },
   methods: {
-    search() {
-      let input = this.input.trim();
-      this.input = '';
-      if (!input) {
-        //  || (input.length !== 32 && input.length !== 20)
-        alert('invalid input');
-        return;
-      }
+    searchQuery() {
+      let input = this.textSearchBar.trim();
+      this.textSearchBar = '';
+
       service
         .search(input)
         .then(result => {
@@ -120,22 +126,12 @@ export default {
             this.$router.push(`/tx/${input}`);
           } else if (result.type === 'address') {
             this.$router.push(`/address/${input}`);
+          } else {
+            alert('invalid search query');
           }
         })
         .catch(r => {
-          let errMessage = 'Not Found!';
-
-          if (r.response && r.response.data && r.response.data.err) {
-            errMessage = r.response.data.err;
-          }
-
-          this.$notify({
-            group: 'search',
-            position: 'top center',
-            type: 'search-error',
-            text: 'Search failed: ' + errMessage,
-            duration: 3000,
-          });
+          alert('invalid search query')
         });
     },
   },
