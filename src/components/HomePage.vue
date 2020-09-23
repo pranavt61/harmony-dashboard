@@ -98,7 +98,6 @@ input:focus {
 
 <template>
   <div class="home-page explorer-page page">
-    
     <div class="home-body explorer-body">
       <div v-if="globalData.blocks.length" class="container">
         <div class="search-bar-body">

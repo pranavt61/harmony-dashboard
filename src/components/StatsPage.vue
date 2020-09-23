@@ -40,88 +40,78 @@
   padding: 10px 0px;
   color: #1b295e;
 }
+
 </style>
 
 <template>
-  <div class="metrics-summary">
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-        <div class="stats-row">
-          <div class="flex-horizontal">
-            <div class="icon-column">
-              <div class="data-icon-circle">
-                <div class="data-icon icon-harmony-logo" />
+  <div class="explorer-page page">
+    <div class="explorer-body">
+      <div class="container">
+        <div class="header-spacing" />
+        <header class="block-height-header">
+          <h1>Stats and Charts</h1>
+        </header>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="explorer-card">
+              <header>
+                <h1 class="flex-grow">
+                  ONE TRANSACTION HISTORY IN {{ selectedTransactionVolumeTimeframeLabel }}
+                </h1>
+                <div class="secondary-info">
+                  <div class="dropdown">
+                    <button class="dropbtn btn btn-light btn-icon-only">
+                      <font-awesome-icon icon="chevron-down" />
+                    </button>
+                    <div class="dropdown-content">
+                      <a href="#" @click.prevent="setTransactionChartTimeframe(48, '2 DAYS')">2 Days</a>
+                      <a href="#" @click.prevent="setTransactionChartTimeframe(336, '14 DAYS')">14 Days</a>
+                      <a href="#" @click.prevent="setTransactionChartTimeframe(720, '30 DAYS')">30 Days</a>
+                      <a href="#" @click.prevent="setTransactionChartTimeframe(8544, '1 YEAR')">1 Year</a>
+                      <a href="#" @click.prevent="setTransactionChartTimeframe(-1, 'ALL TIME')">All Time</a>
+                    </div>
+                  </div>
+                </div>
+              </header>
+              <div class="explorer-card-body">
+                <div id="Transaction-Volume-Body"></div>
+                <div v-if="loadingTransactionVolumeChart">
+                    <loading-message />
+                </div>
               </div>
-            </div>
-            <div class="data-num-column">
-              <div class="data-num">
-                {{ stats.price | currency }}
-              </div>
-              <h1>ONE Price</h1>
-            </div>
-          </div>
-          <div class="flex-horizontal">
-            <div class="icon-column">
-              <div class="data-icon-circle">
-                <div class="data-icon icon-market-cap" />
-              </div>
-            </div>
-            <div class="data-num-column">
-              <div class="data-num">
-                {{ stats.marketCap | bigCurrency }}
-              </div>
-              <h1>Market Cap</h1>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-        <div class="flex-horizontal">
-          <div class="icon-column">
-            <div class="data-icon-circle">
-              <div class="data-icon icon-tx-count" />
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="explorer-card">
+              <header>
+                <h1 class="flex-grow">
+                  ONE GAS USED IN {{ selectedTransactionVolumeTimeframeLabel }}
+                </h1>
+                <div class="secondary-info">
+                  <div class="dropdown">
+                    <button class="dropbtn btn btn-light btn-icon-only">
+                      <font-awesome-icon icon="chevron-down" />
+                    </button>
+                    <div class="dropdown-content">
+                      <a href="#" @click.prevent="setGasUsedChartTimeframe(48, '2 DAYS')">2 Days</a>
+                      <a href="#" @click.prevent="setGasUsedChartTimeframe(336, '14 DAYS')">14 Days</a>
+                      <a href="#" @click.prevent="setGasUsedChartTimeframe(720, '30 DAYS')">30 Days</a>
+                      <a href="#" @click.prevent="setGasUsedChartTimeframe(8544, '1 YEAR')">1 Year</a>
+                      <a href="#" @click.prevent="setGasUsedChartTimeframe(-1, 'ALL TIME')">All Time</a>
+                    </div>
+                  </div>
+                </div>
+              </header>
+              <div class="explorer-card-body">
+                <div id="Gas-Used-Body"></div>
+                <div v-if="loadingGasUsedChart">
+                    <loading-message />
+                </div>
+              </div>
             </div>
           </div>
-          <div class="data-num-column">
-            <div class="data-num">
-              {{ stats.volume | bigCurrency }}
-            </div>
-            <h1>Volume 24H</h1>
-          </div>
-        </div>
-        <div class="flex-horizontal">
-          <div class="icon-column">
-            <div class="data-icon-circle">
-              <div class="data-icon icon-block-count" />
-            </div>
-          </div>
-          <div class="data-num-column">
-            <div class="data-num">
-              {{ stats.totalSupply | bigCurrencyOne }}
-            </div>
-            <h1>Total ONE Supply</h1>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-        <div class="chart-header">
-          ONE TRANSACTION HISTORY IN {{ selectedTransactionVolumeTimeframeLabel }}
-          <div class="dropdown">
-            <button class="dropbtn btn btn-light btn-icon-only">
-              <font-awesome-icon icon="chevron-down" />
-            </button>
-            <div class="dropdown-content">
-              <a href="#" @click.prevent="setChartTimeframe(48, '2 DAYS')">2 Days</a>
-              <a href="#" @click.prevent="setChartTimeframe(336, '14 DAYS')">14 Days</a>
-              <a href="#" @click.prevent="setChartTimeframe(720, '30 DAYS')">30 Days</a>
-              <a href="#" @click.prevent="setChartTimeframe(8544, '1 YEAR')">1 Year</a>
-              <a href="#" @click.prevent="setChartTimeframe(-1, 'ALL TIME')">All Time</a>
-            </div>
-          </div>
-        </div>
-        <div id="Transaction-Volume-Body"></div>
-        <div v-if="loadingTransactionVolumeChart">
-            <loading-message />
         </div>
       </div>
     </div>
@@ -129,81 +119,74 @@
 </template>
 
 <script>
-import numeral from 'numeral';
-import LoadingMessage from './LoadingMessage';
 import service from '../explorer/service';
-
-numeral.register('locale', 'us', {
-  delimiters: {
-    thousands: ',',
-    decimal: '.',
-  },
-  abbreviations: {
-    thousand: 'K',
-    million: 'M',
-    billion: 'B',
-    trillion: 'T',
-  },
-  ordinal: function(number) {
-    return number === 1 ? 'er' : 'ème';
-  },
-  currency: {
-    symbol: '$',
-  },
-});
-
-numeral.locale('us');
+import LoadingMessage from './LoadingMessage';
 
 export default {
-  name: 'CoinStats',
+  name: 'StatsPage',
   components: {
     LoadingMessage,
   },
-  filters: {
-    currency: value =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumSignificantDigits: 5,
-      }).format(value),
-    bigCurrency: value => numeral(value).format('$ 0.00 a'),
-    bigCurrencyOne: value => numeral(value).format('0.00 a'),
-  },
-  props: ['stats'],
   data() {
     return {
       loadingTransactionVolumeChart: true,
       selectedTransactionVolumeTimeframe: '336', // hours
       selectedTransactionVolumeTimeframeLabel: '14 Days',
+
+      loadingGasUsedChart: true,
+      selectedGasUsedTimeframe: '336', // hours
+      selectedGasUsedTimeframeLabel: '14 Days',
+
     };
   },
-  computed: {
-    stylePriceChanged() {
-      return {
-        color: this.stats.priceChange1d > 0 ? 'green' : 'red',
-      };
-    },
+  mounted() {
+    this.updateChart('Transaction-Volume');
+    this.updateChart('Gas-Used');
   },
   watch: {
-    selectedTransactionVolumeTimeframe (){
-      this.updateTransactionVolumeChart();
+    selectedTransactionVolumeTimeframe() {
+      this.updateChart('Transaction-Volume');
+    },
+    selectedGasUsedTimeframe() {
+      this.updateChart('Gas-Used');
     }
   },
-  mounted() {
-    this.updateTransactionVolumeChart();
-  },
   methods: {
-    setChartTimeframe(time, label) {
+    setTransactionChartTimeframe(time, label) {
       this.selectedTransactionVolumeTimeframe = time.toString();
       this.selectedTransactionVolumeTimeframeLabel = label;
     },
-    updateTransactionVolumeChart() {
-      
-      // set loading animation
-      this.loadingTransactionVolumeChart = true;
+    setGasUsedChartTimeframe(time, label) {
+      this.selectedGasUsedTimeframe = time.toString();
+      this.selectedGasUsedTimeframeLabel = label;
+    },
+
+    updateChart(canvas_id) {
+
+      let getMaxHeight = null;
+      let getData = null;
+
+      let selectedTimeFrame = null;
+
+      if (canvas_id == 'Transaction-Volume') {
+        this.loadingTransactionVolumeChart = true;
+        
+        getMaxHeight = service.getMaxBlockHeightTransactionVolume;
+        getData = service.getTransactionVolume;
+
+        selectedTimeFrame = this.selectedTransactionVolumeTimeframe;
+
+      } else if (canvas_id == 'Gas-Used'){
+        this.loadingGasUsedChart = true;
+        
+        getMaxHeight = service.getMaxBlockHeightGasUsed;
+        getData = service.getGasUsed;
+
+        selectedTimeFrame = this.selectedGasUsedTimeframe;
+      }
 
       // remove canvas element
-      let chart_canvas_el_rem = document.getElementById("Transaction-Volume-Chart");
+      let chart_canvas_el_rem = document.getElementById(canvas_id + '-Chart');
       if (chart_canvas_el_rem != null) {
         chart_canvas_el_rem.parentNode.removeChild(chart_canvas_el_rem);
       }
@@ -211,19 +194,22 @@ export default {
       let min_height = 0;
       let max_height = 0;
 
-      service.getMaxBlockHeightTransactionVolume().then(res => {
+      getMaxHeight().then(res => {
         // Get current block height 
 
         let height = res.data['height']
 
+        console.log(canvas_id)
+        console.log(height)
+
         let block_range = 0;
 
-        if (this.selectedTransactionVolumeTimeframe !== '-1') {
-          // selectedTransactionVolumeTimeframe is selected by hours,
+        if (selectedTimeFrame !== '-1') {
+          // selectedTimeFrame is selected by hours,
           // convert to seconds
           // then convert to blocks
 
-          block_range = (parseInt(this.selectedTransactionVolumeTimeframe) * 3600) / 5;
+          block_range = (parseInt(selectedTimeFrame) * 3600) / 5;
         } else {
           // selected all time
           block_range = height;
@@ -232,17 +218,21 @@ export default {
         min_height = height - block_range;
         max_height = height;
 
-        return service.getTransactionVolume(min_height);
+        return getData(min_height);
       }).then(res => {
         // Get transaction volume
 
         // stop loading animation
-        this.loadingTransactionVolumeChart = false;
+        if (canvas_id == 'Transaction-Volume') {
+          this.loadingTransactionVolumeChart = false;
+        } else if (canvas_id == 'Gas-Used') {
+          this.loadingGasUsedChart = false;
+        }
 
         // add canvas element
         let chart_canvas_el_add = document.createElement("CANVAS");
-        chart_canvas_el_add.setAttribute('id', "Transaction-Volume-Chart");
-        document.getElementById("Transaction-Volume-Body").appendChild(chart_canvas_el_add);
+        chart_canvas_el_add.setAttribute('id', canvas_id + "-Chart");
+        document.getElementById(canvas_id + "-Body").appendChild(chart_canvas_el_add);
 
         let timestamps = res.data;
 
@@ -255,8 +245,8 @@ export default {
 
         let labels = [];
         for (let i = 0; i < num_bars; i ++) {
-          if (i == 0 || i == 19 || i == 39) {
-            let time_selected = parseInt(this.selectedTransactionVolumeTimeframe);
+          if (i % 4 == 0) {
+            let time_selected = parseInt(selectedTimeFrame);
             if (time_selected == -1) {
               // Selected all time
               // HARDCODED
@@ -287,7 +277,7 @@ export default {
               let d = dateAgo.getDate();
 
               // only show year when selected All Time
-              let y = (this.selectedTransactionVolumeTimeframe == '-1') ?
+              let y = (selectedTimeFrame == '-1') ?
                 (' ' + dateAgo.getFullYear()) : '';
 
               m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
@@ -310,19 +300,28 @@ export default {
         }
 
         for (let i = 0; i < timestamps.length; i++) {
+          let count = 0;
+          if (canvas_id == 'Transaction-Volume') {
+            count = timestamps[i]['Tx_count'];
+          } else if (canvas_id = 'Gas-Used') {
+            count = timestamps[i]['Gas_used'];
+          }
+
           let height = timestamps[i]['Block_height'];
-          let tx_count = timestamps[i]['Tx_count'];
           if (height == max_height) {
             continue;
           }
 
           let index = Math.floor(((height - min_height) / (max_height - min_height)) * data.length);
 
-          data[index] += tx_count;
+          data[index] += count;
         }
+
+        console.log(canvas_id);
+        console.log(data);
         
         // Render transaction volume
-        const ctx = document.getElementById('Transaction-Volume-Chart');
+        const ctx = document.getElementById(canvas_id + '-Chart');
         ctx.height = 110;
         const myChart = new Chart(ctx, {
           type: 'bar',

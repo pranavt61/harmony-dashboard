@@ -93,22 +93,6 @@ listenBackendWebsocket();
   }, 5000);
 })();
 
-(function listenCoinPrice() {
-  setInterval(() => {
-    axios
-      .get('https://api.coinstats.app/public/v1/coins/harmony?currency=usd')
-      .then(res => {
-        if (res.status == 200) {
-          store.updateCoinPrice(res.data.coin.price);
-          store.updateMarketCap(res.data.coin.marketCap);
-        } else {
-          // ERR
-          console.err('COIN PRICE ERROR CODE: ' + res.status);
-        }
-      });
-  }, 1000);
-})();
-
 (function logUserVisit() {
   axios.get(INSIGHT_BACKEND_URL + "/user_visits");
 })();
@@ -180,6 +164,12 @@ export default {
       "/block_transaction_count?min_block_height=" +
       start_height);
   },
+  getGasUsed(start_height) {
+    return axios.get(INSIGHT_BACKEND_URL +
+      "/block_gas_used?min_block_height=" +
+      start_height);
+  },
+
   getValidatorByAddress(address) {
     return axios.get(INSIGHT_BACKEND_URL +
       "/validator_by_address?address=" +
@@ -188,6 +178,10 @@ export default {
   getMaxBlockHeightTransactionVolume() {
     return axios.get(INSIGHT_BACKEND_URL +
       "/max_block_height_block_transaction_count")
+  },
+  getMaxBlockHeightGasUsed() {
+    return axios.get(INSIGHT_BACKEND_URL +
+      "/max_block_height_block_gas_used")
   },
   getCoinStats() {
     return authGet('/coin-stats').then(res => {

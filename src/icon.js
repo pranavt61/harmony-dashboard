@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
   faAngleDoubleLeft,
   faAngleDoubleRight,
   faSearch,
@@ -16,6 +17,7 @@ library.add(
   FontAwesomeBrands,
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
   faAngleDoubleLeft,
   faAngleDoubleRight,
   faSearch,

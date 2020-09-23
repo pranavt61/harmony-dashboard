@@ -32,7 +32,6 @@ let store = {
     txCount: 0,
     stakingTxCount: 0,
     nodeCount: 0,
-    coinPrice: '0',
     marketCap: '0',
     lastUpdateTime: 0,
     validators: [],
@@ -127,9 +126,6 @@ let store = {
         .filter(x => isFinite(x))
     );
   },
-  updateCoinPrice(price) {
-    this.data.coinPrice = price;
-  },
   updateMarketCap(price) {
     this.data.marketCap = price;
   },
@@ -154,7 +150,6 @@ let store = {
     this.data.stakingTxCount = 0;
     this.data.nodeCount = 0;
     this.data.nodes = {};
-    this.data.coinPrice = '0';
     this.data.shardCount = 0;
     this.data.validators = [];
     this.data.pendingTxs = {};

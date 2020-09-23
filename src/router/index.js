@@ -12,6 +12,7 @@ import AddressPage from '@/components/AddressPage';
 import ShardPage from '@/components/ShardPage';
 import AddressShardPage from '@/components/AddressShardPage';
 import TransactionsByBlockPage from '@/components/TransactionsByBlockPage';
+import StatsPage from '@/components/StatsPage';
 
 Vue.use(Router);
 
@@ -33,7 +34,7 @@ export default new Router({
       component: AdminPage,
     },
     {
-      path: '/blocks/:pageIndex?',
+      path: '/blocks',
       name: 'BlocksPage',
       component: BlocksPage,
     },
@@ -82,6 +83,11 @@ export default new Router({
       path: '/shard/:id',
       name: 'ShardPage',
       component: ShardPage,
+    },
+    {
+      path: '/stats',
+      name: 'StatsPage',
+      component: StatsPage,
     },
   ],
 });
