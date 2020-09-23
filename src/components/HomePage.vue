@@ -479,9 +479,6 @@ export default {
   },
   mounted() {
 
-    console.log('router');
-    console.log(this.$route);
-
     this.resetTimer();
 
     this.updateCoinStats();
@@ -512,6 +509,19 @@ export default {
     searchQuery() {
       let input = this.textSearchBar.trim();
       this.textSearchBar = '';
+
+      // is pending?
+      let pendingTxs = store.data.pendingTxs;
+      for (let shard_id in pendingTxs) {
+        if (pendingTxs.hasOwnProperty(shard_id)) {
+          for (let i = 0; i < pendingTxs[shard_id].length; i ++) {
+            if (pendingTxs[shard_id][i]['hash'] == input) {
+              this.$router.push(`/tx/${input}`);
+              return;
+            }
+          }
+        }
+      }
 
       service
         .search(input)

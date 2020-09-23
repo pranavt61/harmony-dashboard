@@ -102,6 +102,8 @@
 
 <script>
 import service from '../explorer/service';
+import store from '../explorer/store';
+
 export default {
   name: 'SiteHeader',
   data() {
@@ -109,13 +111,23 @@ export default {
       textSearchBar: ''
     };
   },
-  mounted() {
-    console.log(this.$route);
-  },
   methods: {
     searchQuery() {
       let input = this.textSearchBar.trim();
       this.textSearchBar = '';
+
+      // is pending?
+      let pendingTxs = store.data.pendingTxs;
+      for (let shard_id in pendingTxs) {
+        if (pendingTxs.hasOwnProperty(shard_id)) {
+          for (let i = 0; i < pendingTxs[shard_id].length; i ++) {
+            if (pendingTxs[shard_id][i]['hash'] == input) {
+              this.$router.push(`/tx/${input}`);
+              return;
+            }
+          }
+        }
+      }
 
       service
         .search(input)
