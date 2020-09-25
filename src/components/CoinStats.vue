@@ -312,7 +312,8 @@ export default {
         for (let i = 0; i < timestamps.length; i++) {
           let height = timestamps[i]['Block_height'];
           let tx_count = timestamps[i]['Tx_count'];
-          if (height == max_height) {
+          if (height >= max_height) {
+            data[num_bars - 1] += tx_count;
             continue;
           }
 
@@ -320,6 +321,8 @@ export default {
 
           data[index] += tx_count;
         }
+
+        console.log(data);
         
         // Render transaction volume
         const ctx = document.getElementById('Transaction-Volume-Chart');
