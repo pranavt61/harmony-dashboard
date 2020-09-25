@@ -1,5 +1,10 @@
 <style scoped lang="less">
 @import '../less/common.less';
+
+.shard-dropdown {
+  margin: 4px 10px;
+}
+
 </style>
 
 <template>
@@ -10,7 +15,23 @@
         <div class="explorer-card">
           <header style="align-items: center;">
             <h1 class="flex-grow">
-              Transactions
+              <div class="flex-horizontal">
+                Transactions in 
+                <div class="secondary-info shard-dropdown">
+                  <select v-model="selectedTransactionsShard">
+                    <option value="-1">
+                      All Shards
+                    </option>
+                    <option
+                      v-for="shard in globalData.shards"
+                      :key="shard.id"
+                      :value="shard.id"
+                    >
+                      Shard {{ shard.id }}
+                    </option>
+                  </select>
+                </div>
+              </div>
             </h1>
             <div class="pagination-controls">
               <div class="page-controllers-row">
@@ -52,7 +73,7 @@
                   Size (bytes)
                 </th>
               </tr>
-              <tr v-for="tx in txs" :key="tx.id" class="container">
+              <tr v-for="tx in filterTransactionsByShards" :key="tx.id" class="container">
                 <td>
                   <!-- <router-link :to="'/shard/' + tx.shardID"> -->
                   {{ tx.shardID }}
@@ -117,10 +138,22 @@ export default {
     return {
       globalData: store.data,
       txs: [],
+      selectedTransactionsShard: '-1',
       cursor: moment(),
       maxDate: moment().toString(),
       pageSize: 50,
     };
+  },
+  computed: {
+    filterTransactionsByShards() {
+      const selectedShard = this.selectedTransactionsShard;
+
+      if (selectedShard == '-1') {
+        return this.txs;
+      }
+
+      return this.globalData.shards[selectedShard].txs;
+    },
   },
   watch: {
     $route() {
