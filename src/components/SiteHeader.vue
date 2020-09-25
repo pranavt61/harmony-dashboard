@@ -38,6 +38,7 @@
     color: white;
     border-radius: 5px;
     padding: @space-md @space-md;
+    margin: 2px;
     box-shadow: 0 0px 0px rgba(0,0,0,0.15);
     transition: box-shadow 0.3s ease-in-out;
     &:hover {
@@ -58,6 +59,7 @@
   font-size: 10px;
 
   padding: 20px 20px !important;
+  margin: 2px;
   border: 0px !important;
   border-radius: 5px !important;
   box-shadow: 0 0 0.4em rgba(0, 0, 0, 0.5);

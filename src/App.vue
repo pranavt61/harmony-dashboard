@@ -249,6 +249,13 @@ body,
       &.icon-market-cap {
         background-image: url(assets/market-cap.svg);
       }
+      &.icon-total-supply {
+        background-image: url(assets/total-supply.svg);
+      }
+      &.icon-block-latency {
+        background-image: url(assets/block-latency.svg);
+      }
+
     }
   }
 }

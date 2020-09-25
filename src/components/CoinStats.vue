@@ -92,7 +92,7 @@
         <div class="flex-horizontal">
           <div class="icon-column">
             <div class="data-icon-circle">
-              <div class="data-icon icon-block-count" />
+              <div class="data-icon icon-total-supply" />
             </div>
           </div>
           <div class="data-num-column">

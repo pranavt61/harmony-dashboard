@@ -1,6 +1,10 @@
 <style scoped lang="less">
 @import '../less/common.less';
 
+.stats-header {
+  padding: 10px;
+}
+
 .dropbtn {
   border: none;
   cursor: pointer;
@@ -48,9 +52,129 @@
     <div class="explorer-body">
       <div class="container">
         <div class="header-spacing" />
-        <header class="block-height-header">
+        <header class="stats-header">
           <h1>Stats and Charts</h1>
         </header>
+
+        <div v-if="coinStats !== null" class="explorer-card status-card">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+              <div class="stats-row">
+                <div class="flex-horizontal">
+                  <div class="icon-column">
+                    <div class="data-icon-circle">
+                      <div class="data-icon icon-harmony-logo" />
+                    </div>
+                  </div>
+                  <div class="data-num-column">
+                    <div class="data-num">
+                      {{ coinStats.price | currency }}
+                    </div>
+                    <h1>ONE Price</h1>
+                  </div>
+                </div>
+                <div class="flex-horizontal">
+                  <div class="icon-column">
+                    <div class="data-icon-circle">
+                      <div class="data-icon icon-market-cap" />
+                    </div>
+                  </div>
+                  <div class="data-num-column">
+                    <div class="data-num">
+                      {{ coinStats.marketCap | bigCurrency }}
+                    </div>
+                    <h1>Market Cap</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+              <div class="flex-horizontal">
+                <div class="icon-column">
+                  <div class="data-icon-circle">
+                    <div class="data-icon icon-tx-count" />
+                  </div>
+                </div>
+                <div class="data-num-column">
+                  <div class="data-num">
+                    {{ coinStats.volume | bigCurrency }}
+                  </div>
+                  <h1>Volume 24H</h1>
+                </div>
+              </div>
+              <div class="flex-horizontal">
+                <div class="icon-column">
+                  <div class="data-icon-circle">
+                    <div class="data-icon icon-total-supply" />
+                  </div>
+                </div>
+                <div class="data-num-column">
+                  <div class="data-num">
+                    {{ coinStats.totalSupply | bigCurrencyOne }}
+                  </div>
+                  <h1>Total ONE Supply</h1>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+              <div class="flex-horizontal">
+                <div class="icon-column">
+                  <div class="data-icon-circle">
+                    <div class="data-icon icon-block-count" />
+                  </div>
+                </div>
+                <div class="data-num-column">
+                  <div class="data-num">
+                    {{ store.blockCount | number }}
+                  </div>
+                  <h1>Block Count</h1>
+                </div>
+              </div>
+              <div class="flex-horizontal">
+                <div class="icon-column">
+                  <div class="data-icon-circle">
+                    <div class="data-icon icon-block-latency" />
+                  </div>
+                </div>
+                <div class="data-num-column">
+                  <div class="data-num">
+                    {{ store.blockLatency | blockLatency }}
+                  </div>
+                  <h1>Block Latency</h1>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+              <div class="flex-horizontal">
+                <div class="icon-column">
+                  <div class="data-icon-circle">
+                    <div class="data-icon icon-node-count" />
+                  </div>
+                </div>
+                <div class="data-num-column">
+                  <div class="data-num">
+                    {{ store.nodeCount | number }}
+                  </div>
+                  <h1>Node Count</h1>
+                </div>
+              </div>
+              <div class="flex-horizontal">
+                <div class="icon-column">
+                  <div class="data-icon-circle">
+                    <div class="data-icon icon-shard-count" />
+                  </div>
+                </div>
+                <div class="data-num-column">
+                  <div class="data-num">
+                    {{ store.shardCount | number }}
+                  </div>
+                  <h1>Shard Count</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="explorer-card">
@@ -119,29 +243,47 @@
 </template>
 
 <script>
+import numeral from 'numeral';
 import service from '../explorer/service';
+import store from '../explorer/store';
 import LoadingMessage from './LoadingMessage';
+
+numeral.locale('us');
 
 export default {
   name: 'StatsPage',
   components: {
     LoadingMessage,
   },
+  filters: {
+    currency: value =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumSignificantDigits: 5,
+      }).format(value),
+    bigCurrency: value => numeral(value).format('$ 0.00 a'),
+    bigCurrencyOne: value => numeral(value).format('0.00 a'),
+  },
   data() {
     return {
+      store: store.data,
+      coinStats: null,
+
       loadingTransactionVolumeChart: true,
-      selectedTransactionVolumeTimeframe: '336', // hours
-      selectedTransactionVolumeTimeframeLabel: '14 Days',
+      selectedTransactionVolumeTimeframe: '8544', // hours
+      selectedTransactionVolumeTimeframeLabel: '1 YEAR',
 
       loadingGasUsedChart: true,
-      selectedGasUsedTimeframe: '336', // hours
-      selectedGasUsedTimeframeLabel: '14 Days',
+      selectedGasUsedTimeframe: '8544', // hours
+      selectedGasUsedTimeframeLabel: '1 YEAR',
 
     };
   },
   mounted() {
     this.updateChart('Transaction-Volume');
     this.updateChart('Gas-Used');
+    this.updateCoinStats();
   },
   watch: {
     selectedTransactionVolumeTimeframe() {
@@ -160,7 +302,13 @@ export default {
       this.selectedGasUsedTimeframe = time.toString();
       this.selectedGasUsedTimeframeLabel = label;
     },
+    updateCoinStats() {
+      service.getCoinStats()
+        .then(result => {
 
+          this.coinStats = result['coin'];
+        });
+    },
     updateChart(canvas_id) {
 
       let getMaxHeight = null;
