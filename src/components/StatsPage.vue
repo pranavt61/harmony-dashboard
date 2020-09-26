@@ -211,7 +211,7 @@
             <div class="explorer-card">
               <header>
                 <h1 class="flex-grow">
-                  ONE GAS USED IN {{ selectedTransactionVolumeTimeframeLabel }}
+                  ONE GAS USED IN {{ selectedGasUsedTimeframeLabel }}
                 </h1>
                 <div class="secondary-info">
                   <div class="dropdown">
@@ -456,7 +456,8 @@ export default {
           }
 
           let height = timestamps[i]['Block_height'];
-          if (height == max_height) {
+          if (height >= max_height) {
+            data[num_bars - 1] += count;
             continue;
           }
 
@@ -464,9 +465,6 @@ export default {
 
           data[index] += count;
         }
-
-        console.log(canvas_id);
-        console.log(data);
         
         // Render transaction volume
         const ctx = document.getElementById(canvas_id + '-Chart');

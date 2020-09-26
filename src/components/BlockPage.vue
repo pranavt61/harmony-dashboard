@@ -383,7 +383,7 @@ export default {
 
       service
         .getValidatorByAddress(address)
-        .then(validator => {this.validator = validator; console.log(validator)})
+        .then(validator => {this.validator = validator;})
     },
     getGasUsedPercent() {
       if (this.block == undefined) {

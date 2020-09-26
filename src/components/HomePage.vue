@@ -510,6 +510,19 @@ export default {
       let input = this.textSearchBar.trim();
       this.textSearchBar = '';
 
+      // is block height?
+      if (parseInt(input) !== NaN) {
+        service
+          .getBlockHashByNumber(parseInt(input))
+          .then(result => {
+            let hash = result['data']['hash'];
+
+            this.$router.push(`/block/${hash}`);
+          });
+
+          return;
+      }
+
       // is pending?
       let pendingTxs = store.data.pendingTxs;
       for (let shard_id in pendingTxs) {

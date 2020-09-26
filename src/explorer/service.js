@@ -115,6 +115,11 @@ export default {
       return block;
     });
   },
+  getBlockHashByNumber(height) {
+    return axios.get(INSIGHT_BACKEND_URL +
+      "/block_hash_by_number?block_height=" +
+      height);
+  },
   getTransactions(cursor, size) {
     return authGet('/txs-new', { params: { cursor, size } }).then(res => {
       let txs = res.data.txs;

@@ -322,8 +322,6 @@ export default {
           data[index] += tx_count;
         }
 
-        console.log(data);
-        
         // Render transaction volume
         const ctx = document.getElementById('Transaction-Volume-Chart');
         ctx.height = 110;
