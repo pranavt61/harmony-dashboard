@@ -511,9 +511,9 @@ export default {
       this.textSearchBar = '';
 
       // is block height?
-      if (parseInt(input) !== NaN) {
+      if (parseInt(input.replaceAll(',', '')) != NaN) {
         service
-          .getBlockHashByNumber(parseInt(input))
+          .getBlockHashByNumber(parseInt(input.replaceAll(',','')))
           .then(result => {
             let hash = result['data']['hash'];
 
