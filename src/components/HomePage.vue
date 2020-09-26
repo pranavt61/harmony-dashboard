@@ -423,19 +423,19 @@ export default {
       const selectedShard = this.selectedBlocksShard;
 
       if (selectedShard === '-1') {
-        return this.globalData.blocks;
+        return this.globalData.blocks.slice(0, 10);
       }
 
-      return this.globalData.shards[selectedShard].blocks;
+      return this.globalData.shards[selectedShard].blocks.slice(0,10);
     },
     filterTransactionsByShards() {
       const selectedShard = this.selectedTransactionsShard;
 
       if (selectedShard == '-1') {
-        return this.globalData.txs;
+        return this.globalData.txs.slice(0, 10);
       }
 
-      return this.globalData.shards[selectedShard].txs;
+      return this.globalData.shards[selectedShard].txs.slice(0,10);
     },
     filterPendingTransactionsByShards() {
       const selectedShard = this.selectedPendingTransactionsShard;
