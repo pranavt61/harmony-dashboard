@@ -511,16 +511,20 @@ export default {
       this.textSearchBar = '';
 
       // is block height?
-      if (parseInt(input.replaceAll(',', '')) != NaN) {
-        service
-          .getBlockHashByNumber(parseInt(input.replaceAll(',','')))
-          .then(result => {
-            let hash = result['data']['hash'];
+      if (input.substring(0,2) !== '0x' &&
+        input.substring(0,3) !== 'one') {
+        let block_height = parseInt(input.replaceAll(',', ''));
+        if (isNaN(block_height) == false) {
+          service
+            .getBlockHashByNumber(block_height)
+            .then(result => {
+              let hash = result['data']['hash'];
 
-            this.$router.push(`/block/${hash}`);
-          });
+              this.$router.push(`/block/${hash}`);
+            });
 
-          return;
+            return;
+        }
       }
 
       // is pending?
