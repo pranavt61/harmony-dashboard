@@ -1,5 +1,3 @@
-<img align="right" width="400" height="400" src="src/assets/logo.png">
-
 Harmony Explorer
 =======
 
@@ -11,6 +9,18 @@ Our production mainnet supports 4 shards of 1000 nodes, producing blocks in 5 se
 
 [The Explorer](http://54.187.20.215:8080/#/) allows users from all backgrounds to view and explorer the Harmony Blockchain by
 making visible the latest blocks, pending transactions, top validators, and much more!
+
+## Preview
+### Home Page
+<img src="/doc/imgs/Home_Page.png" />
+<img src="/doc/imgs/Home_Page_2.png" />
+
+### Blocks Page
+<img src="/doc/imgs/Blocks_Page.png" />
+
+### Stats Page
+<img src="/doc/imgs/Stats_Page.png" />
+
 
 ## Build Setup
 
