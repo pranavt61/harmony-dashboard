@@ -70,10 +70,6 @@
   --color-text-error: @color-error;
 }
 
-body {
-    font-family: Nunito;
-}
-
 .text-right {
   text-align: right !important;
 }
@@ -154,7 +150,7 @@ body {
 }
 
 .card {
-  border-radius: 25px;
+  border-radius: @border-radius;
   background-color: #fff;
   padding: @space-md;
 }
@@ -260,7 +256,7 @@ a {
   border: solid 1px transparent;
   outline: 0;
   cursor: pointer;
-  transition: box-shadow 0.3s ease-in-out;
+  transition: background-color @anim-duration @anim-easing;
   padding: @space-sm @space-md;
 
   &.disabled,
@@ -274,12 +270,11 @@ a {
     width: 2em;
     height: 2em;
     padding: 0;
-    border-radius: 5px;
   }
 
   &.btn-light {
     &:hover {
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      background-color: rgba(0, 0, 0, 0.08);
     }
 
     &.btn-danger {
@@ -345,7 +340,7 @@ a {
 }
 
 .hmy-bg {
-  background: #5f2c82;
+  background: linear-gradient(to right top, #00aee9, #4fe7c8);
 }
 
 :global {
@@ -383,6 +378,37 @@ td.address_link {
   }
 }
 
-div.header-spacing {
-  padding: 30px;
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+.tooltiptext-active {
+  visibility: visible !important;
+  opacity: 1 !important;
 }

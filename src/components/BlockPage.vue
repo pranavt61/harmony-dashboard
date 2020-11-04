@@ -1,50 +1,11 @@
 <style scoped lang="less">
 @import '../less/common.less';
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -60px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.tooltip .tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-}
-
-.tooltiptext-active {
-  visibility: visible !important;
-  opacity: 1 !important;
-}
 </style>
 
 <template>
   <div class="block-page explorer-page page">
     <div class="block-body explorer-body">
       <div v-if="!loading && block" class="container">
-        <div class="header-spacing" />
         <div class="explorer-card">
           <header class="block-height-header">
             <h1>Block {{ block.height | number }}</h1>

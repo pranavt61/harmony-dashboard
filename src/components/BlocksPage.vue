@@ -1,39 +1,16 @@
 <style scoped lang="less">
 @import '../less/common.less';
-
-.shard-dropdown {
-  margin: 4px 10px;
-}
-
 </style>
 
 <template>
   <div class="blocks-page explorer-page page">
     <div class="blocks-body explorer-body">
       <div class="container">
-        <div class="header-spacing" />
         <div class="explorer-card">
           <header>
             <h1 class="flex-grow">
-              <div class="flex-horizontal">
-                Blocks in 
-                <div class="secondary-info shard-dropdown">
-                  <select v-model="selectedBlocksShard">
-                    <option value="-1">
-                      All Shards
-                    </option>
-                    <option
-                      v-for="shard in globalData.shards"
-                      :key="shard.id"
-                      :value="shard.id"
-                    >
-                      Shard {{ shard.id }}
-                    </option>
-                  </select>
-                </div>
-              </div>
+              Blocks
             </h1>
-            
             <div class="pagination-controls">
               <span class="total-block-num">
                 {{ globalData.blockCount }} blocks
@@ -94,7 +71,7 @@
                   Size (bytes)
                 </th>
               </tr>
-              <tr v-for="block in filterBlocksByShards" :key="block.id" class="container">
+              <tr v-for="block in blocks" :key="block.id" class="container">
                 <td>
                   <!-- <router-link :to="'/shard/' + block.shardID"> -->
                   {{ block.shardID }}
@@ -135,9 +112,9 @@
 </template>
 
 <script>
-import store from '../explorer/store';
-import service from '../explorer/service';
-import LoadingMessage from './LoadingMessage';
+import store from '../explorer/store'
+import service from '../explorer/service'
+import LoadingMessage from './LoadingMessage'
 
 export default {
   name: 'BlocksPage',
@@ -147,67 +124,57 @@ export default {
   data() {
     return {
       globalData: store.data,
-      selectedBlocksShard: '-1',
       blocks: [],
       pageIndex: 0,
       pageSize: 50,
-    };
+    }
   },
   computed: {
     pageCount() {
-      return Math.ceil(this.globalData.blockCount / this.pageSize);
-    },
-    filterBlocksByShards() {
-      const selectedShard = this.selectedBlocksShard;
-
-      if (selectedShard === '-1') {
-        return this.blocks;
-      }
-
-      return this.globalData.shards[selectedShard].blocks;
+      return Math.ceil(this.globalData.blockCount / this.pageSize)
     },
   },
   watch: {
     $route(to) {
-      this.pageIndex = (+to.params.pageIndex || 1) - 1;
-      this.getBlocks();
+      this.pageIndex = (+to.params.pageIndex || 1) - 1
+      this.getBlocks()
     },
   },
   mounted() {
     if (this.$route.params.pageIndex) {
-      this.pageIndex = +this.$route.params.pageIndex - 1;
+      this.pageIndex = +this.$route.params.pageIndex - 1
     }
-    this.getBlocks();
+    this.getBlocks()
   },
   methods: {
     goToPage(index) {
-      if (index < 0) index = 0;
-      if (index >= this.pageCount) index = this.pageCount - 1;
+      if (index < 0) index = 0
+      if (index >= this.pageCount) index = this.pageCount - 1
       this.$router.replace({
         name: 'BlocksPage',
         params: { pageIndex: index + 1 },
-      });
+      })
     },
     first() {
-      this.goToPage(0);
+      this.goToPage(0)
     },
     last() {
-      this.goToPage(this.pageCount - 1);
+      this.goToPage(this.pageCount - 1)
     },
     prev() {
-      if (this.pageIndex === 0) return;
-      this.goToPage(this.pageIndex - 1);
+      if (this.pageIndex === 0) return
+      this.goToPage(this.pageIndex - 1)
     },
     next() {
-      if (this.pageIndex === this.pageCount - 1) return;
-      this.goToPage(this.pageIndex + 1);
+      if (this.pageIndex === this.pageCount - 1) return
+      this.goToPage(this.pageIndex + 1)
     },
     getBlocks() {
-      this.blocks = [];
+      this.blocks = []
       service.getBlocks(this.pageIndex, this.pageSize).then(blocks => {
-        this.blocks = blocks;
-      });
+        this.blocks = blocks
+      })
     },
   },
-};
+}
 </script>

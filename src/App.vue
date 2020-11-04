@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background-color: white;
+  background-color: #dfdfdf;
 }
 
 html,
@@ -66,10 +66,10 @@ body,
 .explorer-page {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: #f7f7ff;
   .explorer-body {
     flex: 1;
-    padding: 50px 0px;
+    padding-top: 8em;
     width: 100%;
     color: var(--primary-text-color);
     display: flex;
@@ -77,10 +77,6 @@ body,
 
   .explorer-card {
     .card();
-
-    border: 1px solid #e7eaf3;
-    border-radius: .5rem;
-
     background-color: var(--color-card-background);
     color: var(--color-table-text);
     padding: 0;
@@ -228,9 +224,6 @@ body,
       background-size: 60% 60%;
       background-repeat: no-repeat;
       background-position: center;
-      &.icon-harmony-logo {
-        background-image: url(assets/harmony-one-logo.svg);
-      }
       &.icon-block-count {
         background-image: url(assets/block-count.svg);
       }
@@ -243,19 +236,34 @@ body,
       &.icon-shard-count {
         background-image: url(assets/shard-count.svg);
       }
-      &.icon-coin-price {
-        background-image: url(assets/coin-price.svg);
-      }
-      &.icon-market-cap {
-        background-image: url(assets/market-cap.svg);
-      }
-      &.icon-total-supply {
-        background-image: url(assets/total-supply.svg);
-      }
-      &.icon-block-latency {
-        background-image: url(assets/block-latency.svg);
-      }
+    }
+  }
+}
 
+.explorer-card.status-card.status-shard {
+  .data-num-column {
+    .data-shard {
+      font-size: 1.3em;
+      font-weight: 500;
+    }
+  }
+  .row {
+    margin-left: 5em;
+  }
+  .data-slot {
+    margin-top: 1.3em;
+    /*border-bottom: solid 1px var(--color-table-border);*/
+
+    .data {
+      font-size: 1.2em;
+      color: black;
+    }
+    .link {
+      font-size: 1.2em;
+    }
+    .sub-title {
+      font-size: 1.1em;
+      color: #888;
     }
   }
 }
@@ -309,10 +317,10 @@ body,
 </template>
 
 <script>
-import 'animate.css/animate.css';
-import 'flexboxgrid/dist/flexboxgrid.min.css';
-import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
+import 'animate.css/animate.css'
+import 'flexboxgrid/dist/flexboxgrid.min.css'
+import SiteFooter from './components/SiteFooter'
+import SiteHeader from './components/SiteHeader'
 
 export default {
   name: 'App',
@@ -320,5 +328,5 @@ export default {
     SiteFooter,
     SiteHeader,
   },
-};
+}
 </script>
